@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const projects = [
+  {
+    title: 'Let Me Know',
+    description: 'Aplicación de recordatorios por voz para adultos y adultos mayores. Utiliza reconocimiento de voz y text-to-speech para una experiencia accesible.',
+    slug: 'let-me-know',
+    tags: ['Flutter', 'Dart', 'BLoC', 'SQLite', 'Speech-to-Text'],
+  },
+  {
+    title: 'Soundfua Desktop',
+    description: 'Reproductor de música de escritorio multiplataforma con soporte para hotkeys globales, bandeja del sistema y múltiples ventanas.',
+    slug: 'soundfua-desktop',
+    tags: ['Flutter', 'Riverpod', 'Drift', 'Desktop', 'Media Kit'],
+  },
+  {
+    title: 'Emotiva App',
+    description: 'Aplicación móvil para centro psicológico con gestión de citas, notificaciones y autenticación Firebase.',
+    slug: 'emotiva-app',
+    tags: ['Flutter', 'Firebase', 'Riverpod', 'Cloud Functions'],
+  },
+  {
+    title: 'UI Spec Generator',
+    description: 'Herramienta MCP para generar especificaciones de UI desde diseños de Figma usando IA.',
+    slug: 'ui-spec-generator',
+    tags: ['TypeScript', 'MCP', 'Figma API', 'OpenAI'],
+  },
+  {
+    title: 'Developer Portfolio',
+    description: 'Este mismo sitio web. Portafolio personal construido con Astro, Preact y Tailwind CSS.',
+    slug: 'developer-portfolio',
+    tags: ['Astro', 'Preact', 'Tailwind', 'Nanostores'],
+  },
+];
+---
+
+<BaseLayout title="Proyectos" description="Mis proyectos de desarrollo">
+  <section class="py-8">
+    <h1 class="text-4xl font-bold mb-4">Proyectos</h1>
+    <p class="text-xl text-[var(--text-secondary)] mb-8">
+      Una colección de proyectos personales y profesionales en los que he trabajado.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {projects.map((project) => (
+        <ProjectCard {...project} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

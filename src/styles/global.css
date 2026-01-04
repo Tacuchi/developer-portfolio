@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-primary-dark: #2563eb;
+  --color-accent: #8b5cf6;
+
+  --color-bg-light: #ffffff;
+  --color-bg-secondary-light: #f3f4f6;
+  --color-text-light: #1f2937;
+  --color-text-secondary-light: #6b7280;
+  --color-border-light: #e5e7eb;
+
+  --color-bg-dark: #0f172a;
+  --color-bg-secondary-dark: #1e293b;
+  --color-text-dark: #f1f5f9;
+  --color-text-secondary-dark: #94a3b8;
+  --color-border-dark: #334155;
+}
+
+:root {
+  --bg: var(--color-bg-light);
+  --bg-secondary: var(--color-bg-secondary-light);
+  --text: var(--color-text-light);
+  --text-secondary: var(--color-text-secondary-light);
+  --border: var(--color-border-light);
+}
+
+:root.dark {
+  --bg: var(--color-bg-dark);
+  --bg-secondary: var(--color-bg-secondary-dark);
+  --text: var(--color-text-dark);
+  --text-secondary: var(--color-text-secondary-dark);
+  --border: var(--color-border-dark);
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+}

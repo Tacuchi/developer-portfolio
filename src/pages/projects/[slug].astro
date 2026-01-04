@@ -1,0 +1,159 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TechBadge from '../../components/TechBadge.astro';
+
+export function getStaticPaths() {
+  const projects = [
+    {
+      slug: 'let-me-know',
+      title: 'Let Me Know',
+      description: 'Aplicación de recordatorios por voz para adultos y adultos mayores.',
+      longDescription: `
+        Let Me Know es una aplicación de recordatorios diseñada específicamente para adultos y adultos mayores.
+        Utiliza reconocimiento de voz para crear recordatorios de forma natural y text-to-speech para
+        notificar al usuario de manera accesible.
+        
+        La arquitectura sigue el patrón BLoC para la gestión de estado, con Drift como base de datos local
+        y un sistema de notificaciones locales para los recordatorios.
+      `,
+      tags: ['Flutter', 'Dart', 'BLoC', 'Drift', 'SQLite', 'Speech-to-Text', 'TTS'],
+      github: 'https://github.com/Tacuchi/let-me-know',
+      features: [
+        'Reconocimiento de voz para crear recordatorios',
+        'Text-to-Speech para notificaciones accesibles',
+        'Notificaciones locales programadas',
+        'Persistencia con Drift/SQLite',
+        'UI adaptada para adultos mayores',
+      ],
+    },
+    {
+      slug: 'soundfua-desktop',
+      title: 'Soundfua Desktop',
+      description: 'Reproductor de música de escritorio multiplataforma.',
+      longDescription: `
+        Soundfua es un reproductor de música de escritorio construido con Flutter.
+        Soporta Windows, macOS y Linux con funcionalidades nativas como hotkeys globales,
+        integración con la bandeja del sistema y múltiples ventanas.
+      `,
+      tags: ['Flutter', 'Riverpod', 'Drift', 'Desktop', 'Media Kit', 'FFI'],
+      github: 'https://github.com/Tacuchi/soundfua_desktop',
+      features: [
+        'Reproducción de audio con Media Kit',
+        'Hotkeys globales para control',
+        'Integración con bandeja del sistema',
+        'Soporte multi-ventana',
+        'Base de datos local con Drift',
+      ],
+    },
+    {
+      slug: 'emotiva-app',
+      title: 'Emotiva App',
+      description: 'Aplicación móvil para centro psicológico.',
+      longDescription: `
+        Aplicación móvil para el Centro Psicológico Emotiva. Permite a los pacientes
+        gestionar sus citas, recibir notificaciones y comunicarse con sus terapeutas.
+      `,
+      tags: ['Flutter', 'Firebase', 'Riverpod', 'Cloud Functions', 'Firestore'],
+      github: 'https://github.com/Tacuchi/emotiva_flutter_app',
+      features: [
+        'Autenticación con Firebase',
+        'Gestión de citas',
+        'Notificaciones push',
+        'Chat en tiempo real',
+        'Almacenamiento en la nube',
+      ],
+    },
+    {
+      slug: 'ui-spec-generator',
+      title: 'UI Spec Generator',
+      description: 'Herramienta MCP para especificaciones de UI.',
+      longDescription: `
+        Herramienta que utiliza el Model Context Protocol (MCP) para conectar con Figma
+        y generar especificaciones de UI utilizando inteligencia artificial.
+      `,
+      tags: ['TypeScript', 'MCP', 'Figma API', 'OpenAI', 'Node.js'],
+      features: [
+        'Integración con Figma API',
+        'Generación de specs con IA',
+        'Protocolo MCP',
+        'CLI interactivo',
+      ],
+    },
+    {
+      slug: 'developer-portfolio',
+      title: 'Developer Portfolio',
+      description: 'Portafolio personal.',
+      longDescription: `
+        Este mismo sitio web. Un portafolio personal construido con Astro, Preact y Tailwind CSS.
+        Incluye soporte para temas claro/oscuro/sistema con persistencia en localStorage.
+      `,
+      tags: ['Astro', 'Preact', 'Tailwind CSS', 'Nanostores', 'TypeScript'],
+      github: 'https://github.com/Tacuchi/developer-portfolio',
+      features: [
+        'Generación estática con Astro',
+        'Componentes interactivos con Preact',
+        'Sistema de temas con Nanostores',
+        'Diseño responsive con Tailwind',
+        'SEO optimizado',
+      ],
+    },
+  ];
+
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<BaseLayout title={project.title} description={project.description}>
+  <article class="py-8">
+    <a href="/projects" class="text-[var(--color-primary)] hover:underline mb-4 inline-block">
+      ← Volver a proyectos
+    </a>
+
+    <h1 class="text-4xl font-bold mb-4">{project.title}</h1>
+    
+    <p class="text-xl text-[var(--text-secondary)] mb-6">
+      {project.description}
+    </p>
+
+    <div class="flex flex-wrap gap-2 mb-8">
+      {project.tags.map((tag: string) => <TechBadge name={tag} />)}
+    </div>
+
+    {project.github && (
+      <a
+        href={project.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg hover:border-[var(--color-primary)] transition-colors mb-8"
+      >
+        Ver en GitHub →
+      </a>
+    )}
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Descripción</h2>
+      <div class="prose prose-lg max-w-none text-[var(--text-secondary)] whitespace-pre-line">
+        {project.longDescription}
+      </div>
+    </section>
+
+    {project.features && (
+      <section>
+        <h2 class="text-2xl font-bold mb-4">Características</h2>
+        <ul class="space-y-2">
+          {project.features.map((feature: string) => (
+            <li class="flex items-start gap-2 text-[var(--text-secondary)]">
+              <span class="text-[var(--color-primary)]">✓</span>
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </article>
+</BaseLayout>

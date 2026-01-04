@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TechBadge from '../components/TechBadge.astro';
+
+const experience = [
+  {
+    role: 'Desarrollador Full Stack',
+    company: 'Fintech / Créditos',
+    period: 'Actualidad',
+    description: 'Desarrollo de aplicaciones web con Angular y microservicios con Spring Boot para gestión de créditos.',
+    tech: ['Angular', 'Spring Boot', 'PostgreSQL', 'Docker'],
+  },
+  {
+    role: 'Desarrollador Mobile',
+    company: 'Proyectos Personales',
+    period: '2020 - Presente',
+    description: 'Desarrollo de aplicaciones móviles con Flutter y Android nativo (Kotlin/Java).',
+    tech: ['Flutter', 'Kotlin', 'Jetpack Compose', 'Firebase'],
+  },
+];
+---
+
+<BaseLayout title="Sobre mí" description="Conoce más sobre mi experiencia como desarrollador">
+  <section class="py-8">
+    <h1 class="text-4xl font-bold mb-6">Sobre mí</h1>
+
+    <div class="prose prose-lg max-w-none">
+      <p class="text-xl text-[var(--text-secondary)] mb-8">
+        Soy <strong class="text-[var(--text)]">Jesús Loayza</strong> (Tacuchi), desarrollador Full Stack 
+        con experiencia en desarrollo móvil y web. Me apasiona crear soluciones tecnológicas que 
+        resuelvan problemas reales.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <h3 class="text-xl font-semibold mb-3">📱 Mobile First</h3>
+          <p class="text-[var(--text-secondary)]">
+            Especializado en Flutter para crear apps multiplataforma de alto rendimiento. 
+            También manejo Android nativo con Kotlin y Jetpack Compose.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <h3 class="text-xl font-semibold mb-3">🌐 Full Stack</h3>
+          <p class="text-[var(--text-secondary)]">
+            Desarrollo frontend con Angular y backend con Spring Boot. 
+            Experiencia en arquitectura de microservicios y bases de datos.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-8">
+    <h2 class="text-2xl font-bold mb-6">Experiencia</h2>
+
+    <div class="space-y-6">
+      {experience.map((exp) => (
+        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+            <h3 class="text-xl font-semibold">{exp.role}</h3>
+            <span class="text-[var(--text-secondary)] text-sm">{exp.period}</span>
+          </div>
+          <p class="text-[var(--color-primary)] mb-3">{exp.company}</p>
+          <p class="text-[var(--text-secondary)] mb-4">{exp.description}</p>
+          <div class="flex flex-wrap gap-2">
+            {exp.tech.map((t) => <TechBadge name={t} />)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="py-8">
+    <h2 class="text-2xl font-bold mb-6">Contacto</h2>
+
+    <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
+      <p class="text-[var(--text-secondary)] mb-4">
+        ¿Tienes un proyecto en mente? ¡Me encantaría escucharte!
+      </p>
+
+      <div class="flex flex-wrap gap-4">
+        <a
+          href="mailto:jloayza.dev@gmail.com"
+          class="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors"
+        >
+          📧 jloayza.dev@gmail.com
+        </a>
+        <a
+          href="https://github.com/Tacuchi"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg)] transition-colors"
+        >
+          GitHub
+        </a>
+        <a
+          href="https://linkedin.com/in/jloayzaloayza"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg)] transition-colors"
+        >
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

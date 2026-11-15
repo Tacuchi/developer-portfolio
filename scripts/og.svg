@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <rect x="80" y="96" width="96" height="8" rx="4" fill="#3b82f6"/>
+  <text x="80" y="250" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="84" font-weight="700" fill="#f1f5f9">Jesús Loayza Tacuchi</text>
+  <text x="80" y="340" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="44" font-weight="700" fill="#3b82f6">Ingeniero de software senior</text>
+  <text x="80" y="410" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" fill="#94a3b8">Apps móviles y plataformas web</text>
+  <text x="80" y="460" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" fill="#94a3b8">Herramientas para agentes de IA</text>
+  <text x="80" y="548" font-family="Menlo, Courier New, monospace" font-size="30" fill="#f1f5f9">tacuchi.dev</text>
+</svg>

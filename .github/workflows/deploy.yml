@@ -1,0 +1,94 @@
+# Push a main → build y check del sitio → imagen linux/amd64 con tag inmutable
+# (git SHA) en GHCR → redeploy en Coolify → verificación del sitio publicado.
+# Mismo patrón que family-rag. Registry: GHCR (privado).
+# Secrets requeridos en GitHub: COOLIFY_TOKEN · COOLIFY_APP_UUID.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/tacuchi/developer-portfolio
+  COOLIFY_URL: https://coolify.tacuchi.net
+
+# Un deploy a la vez; los push encolados no se cancelan (el último gana en orden).
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run check
+
+  build-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      # Sin secrets de Coolify → test, build e imagen corren y el deploy se salta (run verde).
+      HAS_COOLIFY: ${{ secrets.COOLIFY_TOKEN != '' && secrets.COOLIFY_APP_UUID != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Redeploy en Coolify (tag inmutable)
+        if: env.HAS_COOLIFY == 'true'
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+        run: |
+          curl -fsS -X PATCH "$COOLIFY_URL/api/v1/applications/$APP_UUID" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"docker_registry_image_tag": "${{ github.sha }}"}'
+          curl -fsS -X POST "$COOLIFY_URL/api/v1/deploy" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"uuid\": \"$APP_UUID\"}"
+
+      # La app no tiene healthcheck y el status de Coolify flapea: manda el sitio público.
+      - name: Verificar el sitio publicado
+        if: env.HAS_COOLIFY == 'true'
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -m 15 -w '%{http_code}' https://tacuchi.dev/ || true)
+            loc=$(curl -s -o /dev/null -m 15 -w '%{redirect_url}' https://portfolio.tacuchi.dev/projects/ || true)
+            echo "intento $i: tacuchi.dev=$code · el dominio antiguo redirige a ${loc:-nada}"
+            if [ "$code" = "200" ] && [ "$loc" = "https://tacuchi.dev/projects/" ]; then exit 0; fi
+            sleep 10
+          done
+          echo "el sitio no quedó publicado como se esperaba" >&2
+          exit 1

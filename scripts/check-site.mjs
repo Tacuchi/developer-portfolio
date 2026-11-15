@@ -246,6 +246,16 @@ expect(
 const defaultBlock = serverBlocks.find((block) => /listen\s+80\s+default_server\s*;/.test(block));
 expect(Boolean(defaultBlock) && !defaultBlock.includes('return 301'), 'nginx.conf: el servidor por defecto debe servir el sitio, no redirigir');
 
+// --- Rutas inexistentes: 404 de verdad y sin caché ---
+expect(existsSync(join(dist, '404.html')), 'falta la página de error 404.html');
+expect(xml('404.html').includes('content="noindex"'), '404.html debe pedir a los buscadores que no la listen');
+expect(!pageLocs.some((loc) => loc.includes('/404')), 'sitemap: la página de error no debe listarse');
+const tryFiles = (defaultBlock?.match(/try_files\s+([^;]+);/) ?? [])[1] ?? '';
+expect(tryFiles.trim().endsWith('=404'), `nginx.conf: una ruta inexistente debe responder 404, no otra página (try_files ${tryFiles})`);
+expect(/error_page\s+404\s+\/404\.html\s*;/.test(defaultBlock ?? ''), 'nginx.conf: el 404 debe mostrar /404.html');
+const errorLocation = (defaultBlock?.match(/location\s+=\s+\/404\.html\s*\{([^}]*)\}/) ?? [])[1] ?? '';
+expect(/add_header\s+Cache-Control\s+"no-store"\s+always\s*;/.test(errorLocation), 'nginx.conf: el 404 no debe guardarse en caché (no-store always)');
+
 if (failures.length) {
   console.error(`check: ${failures.length} de ${checks} comprobaciones fallaron`);
   for (const failure of failures) console.error(`  - ${failure}`);

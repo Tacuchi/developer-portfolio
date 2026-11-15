@@ -7,9 +7,11 @@ import { site } from '../data/site';
 interface Props {
   title?: string;
   description?: string;
+  // Páginas que los buscadores no deben listar (la de error).
+  noindex?: boolean;
 }
 
-const { title, description = `${site.name}: ${site.headline}` } = Astro.props;
+const { title, description = `${site.name}: ${site.headline}`, noindex = false } = Astro.props;
 
 const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | ${site.role}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -33,6 +35,7 @@ const person = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="author" content={site.name} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/archivo-latin-wght.woff2" as="font" type="font/woff2" crossorigin />

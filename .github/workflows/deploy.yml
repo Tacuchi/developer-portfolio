@@ -1,12 +1,12 @@
-# Push a main → build y check del sitio → imagen linux/amd64 con tag inmutable
-# (git SHA) en GHCR → redeploy en Coolify → verificación del sitio publicado.
+# Cualquier push → build, check del sitio y prueba del servidor de la imagen.
+# Solo en main → imagen linux/amd64 con tag inmutable (git SHA) en GHCR →
+# redeploy en Coolify → verificación del sitio publicado.
 # Mismo patrón que family-rag. Registry: GHCR (privado).
 # Secrets requeridos en GitHub: COOLIFY_TOKEN · COOLIFY_APP_UUID.
 name: deploy
 
 on:
   push:
-    branches: [main]
   workflow_dispatch:
 
 env:
@@ -33,8 +33,20 @@ jobs:
       - run: npm run build
       - run: npm run check
 
+      # El servidor de la imagen se prueba levantado: códigos, caché y redirección.
+      - name: Probar el servidor de la imagen
+        run: |
+          docker build -t sitio:prueba .
+          docker run -d --name sitio -p 8080:80 sitio:prueba
+          for i in $(seq 1 20); do
+            curl -fs -o /dev/null http://127.0.0.1:8080/ && break
+            sleep 1
+          done
+          scripts/smoke-server.sh http://127.0.0.1:8080
+
   build-deploy:
     needs: test
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read

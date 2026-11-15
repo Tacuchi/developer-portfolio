@@ -19,6 +19,18 @@ const PROFILES = [
 ];
 const FEATURED = ['workline', 'agent-memory', 'agent-skills', 'system-updater', 'emotiva-app'];
 const OTHERS = ['let-me-know', 'soundfua-desktop', 'ui-spec-generator', 'developer-portfolio'];
+// [periodo, empleador, cliente, cargo], del más reciente al más antiguo.
+const EXPERIENCE = [
+  ['11/2024 – actualidad', 'QTC Servicios Financieros', null, 'Analista Programador Senior'],
+  ['09/2023 – 08/2024', 'ValorA (Oregon Foods)', null, 'Desarrollador Senior'],
+  ['04/2023 – 08/2023', 'CSTI Corp', 'Oregon Foods', 'Desarrollador Móvil'],
+  ['03/2022 – 01/2023', 'Inetum', 'RENIEC', 'Software Engineer'],
+  ['02/2020 – 01/2022', 'Experis Perú', 'Ferreyros', 'Desarrollador Android'],
+  ['01/2019 – 12/2019', 'Software Enterprise Services (SES)', 'Luz del Sur', 'Analista Programador'],
+  ['02/2016 – 12/2018', 'Stefanini IT Solutions', 'Luz del Sur', 'Analista Programador'],
+  ['09/2015 – 11/2015', 'B&C Soluciones', 'World Vision Perú', 'Analista Programador'],
+  ['09/2014 – 07/2015', 'Sociedad Nacional del Taxista Peruano (SNTP)', null, 'Técnico Programador'],
+];
 
 const failures = [];
 let checks = 0;
@@ -175,6 +187,33 @@ expect(
   'proyectos: agent-memory debe enlazar a su paquete de npm',
 );
 expect(!memoryLinks.some(isRepo), 'proyectos: agent-memory no debe enlazar a un repo');
+
+// --- Trayectoria: todos los puestos, consultora primero y sin jefatura ---
+const text = (html) => decode(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+const about = htmlOf.get('/about/') ?? '';
+const entries = about.split(/<div data-experience\b/).slice(1).map((chunk) => {
+  const paragraphs = [...chunk.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/g)].map((m) => text(m[1]));
+  return {
+    role: text((chunk.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/) ?? [])[1] ?? ''),
+    period: text((chunk.match(/<span\b[^>]*>([\s\S]*?)<\/span>/) ?? [])[1] ?? ''),
+    company: paragraphs[0] ?? '',
+    description: paragraphs[1] ?? '',
+  };
+});
+expect(entries.length === EXPERIENCE.length, `sobre mí: se esperaban ${EXPERIENCE.length} puestos, hay ${entries.length}`);
+EXPERIENCE.forEach(([period, employer, client, role], index) => {
+  const entry = entries[index];
+  const at = `sobre mí, puesto ${index + 1} (${employer})`;
+  expect(entry?.period === period, `${at}: periodo esperado «${period}», llegó «${entry?.period}»`);
+  expect(Boolean(entry?.role.startsWith(role)), `${at}: cargo esperado «${role}», llegó «${entry?.role}»`);
+  const company = client ? `${employer} · Cliente: ${client}` : employer;
+  expect(entry?.company === company, `${at}: se esperaba «${company}», llegó «${entry?.company}»`);
+  expect((entry?.description.length ?? 0) > 40, `${at}: falta la descripción`);
+});
+const aboutText = text(about.replace(/<head>[\s\S]*?<\/head>/, ''));
+for (const word of [/\bl[ií]der/i, /\bjef[ea]s?\b/i]) {
+  expect(!word.test(aboutText), `sobre mí: no debe presentar jefatura (${word})`);
+}
 
 // --- Un solo dominio: sitemap, robots y redirección ---
 const xml = (name) => (existsSync(join(dist, name)) ? readFileSync(join(dist, name), 'utf8') : '');

@@ -2,37 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TechBadge from '../components/TechBadge.astro';
 import { site } from '../data/site';
+import { experience } from '../data/experience';
 
-const experience = [
-  {
-    role: 'Desarrollador Full Stack',
-    company: 'Fintech / Créditos',
-    period: 'Actualidad',
-    description: 'Desarrollo de aplicaciones web con Angular y microservicios con Spring Boot para gestión de créditos.',
-    tech: ['Angular', 'Spring Boot', 'PostgreSQL', 'Docker'],
-  },
-  {
-    role: 'Desarrollador Mobile',
-    company: 'Proyectos Personales',
-    period: '2020 - Presente',
-    description: 'Desarrollo de aplicaciones móviles con Flutter y Android nativo (Kotlin/Java).',
-    tech: ['Flutter', 'Kotlin', 'Jetpack Compose', 'Firebase'],
-  },
-];
 ---
 
-<BaseLayout title="Sobre mí" description="Conoce más sobre mi experiencia como desarrollador">
+<BaseLayout title="Sobre mí" description="Trayectoria de Jesús Loayza Tacuchi: ingeniero de software senior en apps móviles, plataformas web y herramientas para agentes de IA.">
   <section class="py-8">
     <h1 class="text-4xl font-bold mb-6">Sobre mí</h1>
 
     <div class="prose prose-lg max-w-none">
       <p class="text-xl text-[var(--text-secondary)] mb-8">
-        Soy <strong class="text-[var(--text)]">{site.name}</strong> ({site.alias}), desarrollador Full Stack 
-        con experiencia en desarrollo móvil y web. Me apasiona crear soluciones tecnológicas que 
-        resuelvan problemas reales.
+        Soy <strong class="text-[var(--text)]">{site.name}</strong> ({site.alias}), ingeniero de software senior.
+        Construyo apps móviles y plataformas web, y herramientas para agentes de IA.
+        Antes de adoptar algo nuevo, evalúo si realmente agrega valor.
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
           <h3 class="text-xl font-semibold mb-3">📱 Mobile First</h3>
           <p class="text-[var(--text-secondary)]">
@@ -48,6 +33,14 @@ const experience = [
             Experiencia en arquitectura de microservicios y bases de datos.
           </p>
         </div>
+
+        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
+          <h3 class="text-xl font-semibold mb-3">🤖 Agentes de IA</h3>
+          <p class="text-[var(--text-secondary)]">
+            Herramientas para agentes de código: flujos de trabajo,
+            memoria local y skills, publicadas en GitHub y npm.
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -57,12 +50,15 @@ const experience = [
 
     <div class="space-y-6">
       {experience.map((exp) => (
-        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
+        <div data-experience class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
             <h3 class="text-xl font-semibold">{exp.role}</h3>
             <span class="text-[var(--text-secondary)] text-sm">{exp.period}</span>
           </div>
-          <p class="text-[var(--color-primary)] mb-3">{exp.company}</p>
+          <p class="text-[var(--color-primary)] mb-3">
+            {exp.employer}
+            {exp.client && <span class="text-[var(--text-secondary)]"> · Cliente: {exp.client}</span>}
+          </p>
           <p class="text-[var(--text-secondary)] mb-4">{exp.description}</p>
           <div class="flex flex-wrap gap-2">
             {exp.tech.map((t) => <TechBadge name={t} />)}

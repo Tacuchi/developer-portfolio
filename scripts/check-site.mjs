@@ -9,6 +9,8 @@ const dist = join(root, 'dist');
 
 const ORIGIN = 'https://tacuchi.dev';
 const OLD_HOST = 'portfolio.tacuchi.dev';
+// El CV lo sirve perfil-api: el sitio solo lo enlaza.
+const CV_PATH = '/cv';
 const NAME = 'Jesús Loayza Tacuchi';
 const HEADLINE =
   'Ingeniero de software senior · apps móviles y plataformas web · herramientas para agentes de IA';
@@ -213,6 +215,12 @@ EXPERIENCE.forEach(([period, employer, client, role], index) => {
   expect((entry?.description.length ?? 0) > 40, `${at}: falta la descripción`);
 });
 const aboutText = text(about.replace(/<head>[\s\S]*?<\/head>/, ''));
+const cvLinks = tags(about, 'a').filter((tag) => attr(tag, 'href') === CV_PATH);
+expect(cvLinks.length === 1, `sobre mí: se esperaba un enlace a ${CV_PATH}, hay ${cvLinks.length}`);
+expect(
+  [...about.matchAll(/<a\b[^>]*href="\/cv"[^>]*>([\s\S]*?)<\/a>/g)].some((m) => text(m[1]) === 'Descargar CV'),
+  `sobre mí: el enlace a ${CV_PATH} debe decir «Descargar CV»`,
+);
 for (const word of [/\bl[ií]der/i, /\bjef[ea]s?\b/i]) {
   expect(!word.test(aboutText), `sobre mí: no debe presentar jefatura (${word})`);
 }
@@ -227,6 +235,7 @@ const pageLocs = locs(sitemapIndex).flatMap((loc) => {
   return locs(xml(loc.slice(ORIGIN.length + 1)));
 });
 expect(pageLocs.length === htmlOf.size, `sitemap: lista ${pageLocs.length} direcciones y hay ${htmlOf.size} páginas`);
+expect(!pageLocs.some((loc) => loc.replace(/\/$/, '') === `${ORIGIN}${CV_PATH}`), `sitemap: ${CV_PATH} no es una página del sitio`);
 for (const loc of pageLocs) {
   const ok = loc.startsWith(`${ORIGIN}/`) && existsSync(fileOfRoute(loc.slice(ORIGIN.length)));
   expect(ok, `sitemap: ${loc} no corresponde a una página generada`);

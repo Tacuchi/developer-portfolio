@@ -74,6 +74,7 @@ const areas = [
 
     <p class="act-row">
       <a class="act" href={`mailto:${site.email}`}>{site.email}</a>
+      <a class="act" href={site.cv}>Descargar CV</a>
       {site.profiles.map((profile) => (
         <a class="act" href={profile.href} target="_blank" rel="noopener noreferrer me">
           {profile.label}

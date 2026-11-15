@@ -1,9 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <rect width="1200" height="630" fill="#0f172a"/>
-  <rect x="80" y="96" width="96" height="8" rx="4" fill="#3b82f6"/>
-  <text x="80" y="250" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="84" font-weight="700" fill="#f1f5f9">Jesús Loayza Tacuchi</text>
-  <text x="80" y="340" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="44" font-weight="700" fill="#3b82f6">Ingeniero de software senior</text>
-  <text x="80" y="410" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" fill="#94a3b8">Apps móviles y plataformas web</text>
-  <text x="80" y="460" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" fill="#94a3b8">Herramientas para agentes de IA</text>
-  <text x="80" y="548" font-family="Menlo, Courier New, monospace" font-size="30" fill="#f1f5f9">tacuchi.dev</text>
+  <rect width="1200" height="630" fill="#e6e6e2"/>
+  <text x="76" y="190" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="104" font-weight="700" letter-spacing="-4" fill="#111111">Jesús Loayza Tacuchi</text>
+  <rect x="80" y="246" width="1040" height="254" rx="14" fill="#111111"/>
+  <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="36">
+    <text x="118" y="318" font-weight="700" fill="#b6f23c">1</text>
+    <text x="184" y="318" font-weight="700" fill="#e6e6e2">Ingeniero de software senior</text>
+    <text x="118" y="388" font-weight="700" fill="#b6f23c">2</text>
+    <text x="184" y="388" fill="#e6e6e2">Apps móviles y plataformas web</text>
+    <text x="118" y="458" font-weight="700" fill="#b6f23c">3</text>
+    <text x="184" y="458" fill="#e6e6e2">Herramientas para agentes de IA</text>
+  </g>
+  <rect x="80" y="524" width="268" height="62" rx="10" fill="#b6f23c"/>
+  <text x="108" y="567" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="34" font-weight="700" fill="#111111">tacuchi.dev</text>
 </svg>

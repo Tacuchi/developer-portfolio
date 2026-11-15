@@ -1,99 +1,75 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import TechBadge from '../components/TechBadge.astro';
 import { site } from '../data/site';
 import { experience } from '../data/experience';
 
+const areas = [
+  {
+    title: 'Mobile First',
+    text: 'Especializado en Flutter para crear apps multiplataforma de alto rendimiento. También manejo Android nativo con Kotlin y Jetpack Compose.',
+  },
+  {
+    title: 'Full Stack',
+    text: 'Desarrollo frontend con Angular y backend con Spring Boot. Experiencia en arquitectura de microservicios y bases de datos.',
+  },
+  {
+    title: 'Agentes de IA',
+    text: 'Herramientas para agentes de código: flujos de trabajo, memoria local y skills, publicadas en GitHub y npm.',
+  },
+];
 ---
 
 <BaseLayout title="Sobre mí" description="Trayectoria de Jesús Loayza Tacuchi: ingeniero de software senior en apps móviles, plataformas web y herramientas para agentes de IA.">
-  <section class="py-8">
-    <h1 class="text-4xl font-bold mb-6">Sobre mí</h1>
+  <section class="plate">
+    <h1 class="page-title">Sobre mí</h1>
 
-    <div class="prose prose-lg max-w-none">
-      <p class="text-xl text-[var(--text-secondary)] mb-8">
-        Soy <strong class="text-[var(--text)]">{site.name}</strong> ({site.alias}), ingeniero de software senior.
-        Construyo apps móviles y plataformas web, y herramientas para agentes de IA.
-        Antes de adoptar algo nuevo, evalúo si realmente agrega valor.
-      </p>
+    <p class="lead mt-6" style="max-width: 46rem">
+      Soy <strong>{site.name}</strong> ({site.alias}), ingeniero de software senior.
+      Construyo apps móviles y plataformas web, y herramientas para agentes de IA.
+      Antes de adoptar algo nuevo, evalúo si realmente agrega valor.
+    </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <h3 class="text-xl font-semibold mb-3">📱 Mobile First</h3>
-          <p class="text-[var(--text-secondary)]">
-            Especializado en Flutter para crear apps multiplataforma de alto rendimiento. 
-            También manejo Android nativo con Kotlin y Jetpack Compose.
-          </p>
-        </div>
-
-        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <h3 class="text-xl font-semibold mb-3">🌐 Full Stack</h3>
-          <p class="text-[var(--text-secondary)]">
-            Desarrollo frontend con Angular y backend con Spring Boot. 
-            Experiencia en arquitectura de microservicios y bases de datos.
-          </p>
-        </div>
-
-        <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <h3 class="text-xl font-semibold mb-3">🤖 Agentes de IA</h3>
-          <p class="text-[var(--text-secondary)]">
-            Herramientas para agentes de código: flujos de trabajo,
-            memoria local y skills, publicadas en GitHub y npm.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="py-8">
-    <h2 class="text-2xl font-bold mb-6">Experiencia</h2>
-
-    <div class="space-y-6">
-      {experience.map((exp) => (
-        <div data-experience class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-            <h3 class="text-xl font-semibold">{exp.role}</h3>
-            <span class="text-[var(--text-secondary)] text-sm">{exp.period}</span>
-          </div>
-          <p class="text-[var(--color-primary)] mb-3">
-            {exp.employer}
-            {exp.client && <span class="text-[var(--text-secondary)]"> · Cliente: {exp.client}</span>}
-          </p>
-          <p class="text-[var(--text-secondary)] mb-4">{exp.description}</p>
-          <div class="flex flex-wrap gap-2">
-            {exp.tech.map((t) => <TechBadge name={t} />)}
-          </div>
+    <div class="box-list mt-10 md:grid-cols-3">
+      {areas.map((area) => (
+        <div class="box">
+          <h3 class="text-xl font-bold tracking-[-0.015em] mb-2">{area.title}</h3>
+          <p class="max-w-[38ch]">{area.text}</p>
         </div>
       ))}
     </div>
   </section>
 
-  <section class="py-8">
-    <h2 class="text-2xl font-bold mb-6">Contacto</h2>
+  <section class="pb-4">
+    <h2 class="section-title">Experiencia</h2>
 
-    <div class="p-6 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)]">
-      <p class="text-[var(--text-secondary)] mb-4">
-        ¿Tienes un proyecto en mente? ¡Me encantaría escucharte!
-      </p>
-
-      <div class="flex flex-wrap gap-4">
-        <a
-          href={`mailto:${site.email}`}
-          class="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors"
-        >
-          📧 {site.email}
-        </a>
-        {site.profiles.map((profile) => (
-          <a
-            href={profile.href}
-            target="_blank"
-            rel="noopener noreferrer me"
-            class="px-4 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg)] transition-colors"
-          >
-            {profile.label}
-          </a>
-        ))}
-      </div>
+    <div class="box-list">
+      {experience.map((exp) => (
+        <div data-experience class="job">
+          <h3>{exp.role}</h3>
+          <span class="job-period">{exp.period}</span>
+          <p class="job-company">
+            {exp.employer}
+            {exp.client && <span class="job-client"> · Cliente: {exp.client}</span>}
+          </p>
+          <p class="job-desc">{exp.description}</p>
+          <p class="job-tech">{exp.tech.join(', ')}</p>
+        </div>
+      ))}
     </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Contacto</h2>
+
+    <p class="lead">¿Quieres escribirme sobre alguna de estas herramientas o proyectos? Este es mi correo.</p>
+
+    <p class="act-row">
+      <a class="act" href={`mailto:${site.email}`}>{site.email}</a>
+      {site.profiles.map((profile) => (
+        <a class="act" href={profile.href} target="_blank" rel="noopener noreferrer me">
+          {profile.label}
+        </a>
+      ))}
+    </p>
   </section>
 </BaseLayout>

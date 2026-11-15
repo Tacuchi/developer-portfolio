@@ -1,0 +1,38 @@
+---
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+  title: string;
+  number?: string;
+  heading?: 'h2' | 'h3';
+}
+
+const { project, title, number, heading: Heading = 'h3' } = Astro.props;
+---
+
+<aside class="ficha">
+  <Heading class="ficha-title">
+    {title}
+    {number && <span>{number}</span>}
+  </Heading>
+
+  <ol class="ficha-rows">
+    {project.features.map((feature) => <li>{feature}</li>)}
+  </ol>
+
+  <p class="ficha-made">
+    <b>Hecho con</b>
+    <span>{project.tags.join(', ')}</span>
+  </p>
+
+  {project.links.length > 0 && (
+    <p class="act-row">
+      {project.links.map((link) => (
+        <a class="act" href={link.href} target="_blank" rel="noopener noreferrer">
+          {link.label}
+        </a>
+      ))}
+    </p>
+  )}
+</aside>

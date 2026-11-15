@@ -1,24 +1,22 @@
 import { useStore } from '@nanostores/preact';
 import { themeStore, setTheme, type Theme } from '../stores/theme';
 
-const THEMES: Record<Theme, { icon: string; label: string; next: Theme }> = {
-  light: { icon: '☀️', label: 'Claro', next: 'dark' },
-  dark: { icon: '🌙', label: 'Oscuro', next: 'system' },
-  system: { icon: '💻', label: 'Sistema', next: 'light' },
-};
+const THEMES: { value: Theme; label: string }[] = [
+  { value: 'light', label: 'Claro' },
+  { value: 'system', label: 'Sistema' },
+  { value: 'dark', label: 'Oscuro' },
+];
 
 export default function ThemeToggle() {
   const currentTheme = useStore(themeStore);
-  const { icon, label, next } = THEMES[currentTheme];
 
   return (
-    <button
-      onClick={() => setTheme(next)}
-      class="p-2 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--border)] transition-colors"
-      aria-label="Cambiar tema"
-      title={`Tema: ${label}`}
-    >
-      <span class="text-xl">{icon}</span>
-    </button>
+    <div class="theme" role="group" aria-label="Tema">
+      {THEMES.map(({ value, label }) => (
+        <button type="button" aria-pressed={currentTheme === value} onClick={() => setTheme(value)}>
+          {label}
+        </button>
+      ))}
+    </div>
   );
 }

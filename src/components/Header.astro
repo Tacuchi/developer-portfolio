@@ -1,41 +1,43 @@
 ---
-import ThemeToggle from './ThemeToggle.tsx';
+import { site } from '../data/site';
 
 const navItems = [
   { href: '/', label: 'Inicio' },
-  { href: '/about', label: 'Sobre mí' },
   { href: '/projects', label: 'Proyectos' },
+  { href: '/about', label: 'Sobre mí' },
 ];
 
-const currentPath = Astro.url.pathname;
+// En el build las rutas llegan con barra final (/about/); en dev, sin ella.
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isHome = path === '/';
+const isCurrent = (href: string) =>
+  href === '/' ? isHome : path === href || path.startsWith(`${href}/`);
+
+const Name = isHome ? 'h1' : 'p';
 ---
 
-<header class="sticky top-0 z-50 backdrop-blur-md bg-[var(--bg)]/80 border-b border-[var(--border)]">
-  <nav class="container mx-auto px-4 py-4 max-w-5xl flex items-center justify-between">
-    <a href="/" class="text-xl font-bold text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors">
-      &lt;tacuchi /&gt;
-    </a>
-
-    <div class="flex items-center gap-6">
-      <ul class="hidden sm:flex items-center gap-4">
-        {navItems.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class:list={[
-                'px-3 py-2 rounded-lg transition-colors',
-                currentPath === item.href
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--bg-secondary)]',
-              ]}
-            >
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <ThemeToggle client:load />
-    </div>
-  </nav>
+<header class="site-header" data-header>
+  <div class="page strip">
+    <Name class="strip-name"><a href="/">{site.name}</a></Name>
+    <p class="strip-headline" data-home={String(isHome)}>{site.headline}</p>
+    <nav class="strip-nav" aria-label="Principal">
+      {navItems.map((item) => (
+        <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
 </header>
+
+<script>
+  // En móvil la franja fija se recoge hasta dejar solo el menú.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const nav = header?.querySelector<HTMLElement>('nav');
+  if (header && nav) {
+    const tuck = () => header.style.setProperty('--tuck', `${Math.max(0, nav.offsetTop - 10)}px`);
+    tuck();
+    addEventListener('resize', tuck);
+    document.fonts?.ready.then(tuck);
+  }
+</script>

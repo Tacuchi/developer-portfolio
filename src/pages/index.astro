@@ -1,90 +1,110 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
-import TechBadge from '../components/TechBadge.astro';
-import { site } from '../data/site';
+import Arrow from '../components/Arrow.astro';
+import Ficha from '../components/Ficha.astro';
+import Figure from '../components/Figure.astro';
 import { featuredProjects } from '../data/projects';
 
 const skills = {
-  mobile: ['Flutter', 'Dart', 'Kotlin', 'Android', 'Jetpack Compose'],
-  frontend: ['Angular', 'TypeScript', 'Astro', 'Tailwind CSS'],
-  backend: ['Spring Boot', 'Java', 'PostgreSQL', 'Firebase'],
-  tools: ['Git', 'Docker', 'Coolify', 'Cloudflare'],
+  Mobile: ['Flutter', 'Dart', 'Kotlin', 'Android', 'Jetpack Compose'],
+  Frontend: ['Angular', 'TypeScript', 'Astro', 'Tailwind CSS'],
+  Backend: ['Spring Boot', 'Java', 'PostgreSQL', 'Firebase'],
+  'Agentes de IA': ['TypeScript', 'Node.js', 'Python', 'MCP', 'SQLite'],
+  Tools: ['Git', 'Docker', 'Kubernetes', 'Coolify', 'Cloudflare'],
 };
+
+const plateNumber = (index: number) => String(index + 1).padStart(2, '0');
+const longestWord = (title: string) => Math.max(...title.split(/\s+/).map((word) => word.length));
 ---
 
 <BaseLayout>
-  <!-- Hero Section -->
-  <section class="py-16 text-center">
-    <h1 class="text-4xl sm:text-5xl font-bold mb-4">
-      Hola, soy <span class="text-[var(--color-primary)]">{site.name}</span>
-    </h1>
-    <p class="text-xl text-[var(--text-secondary)] mb-8 max-w-2xl mx-auto">
-      {site.headline}
-    </p>
-    <div class="flex justify-center gap-4">
-      <a
-        href="/projects"
-        class="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors"
-      >
-        Ver proyectos
-      </a>
-      <a
-        href="/about"
-        class="px-6 py-3 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-secondary)] transition-colors"
-      >
-        Sobre mí
-      </a>
-    </div>
-  </section>
-
-  <!-- Skills Section -->
-  <section class="py-12">
-    <h2 class="text-2xl font-bold mb-6">Tecnologías</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-        <h3 class="font-semibold mb-3 text-[var(--color-primary)]">📱 Mobile</h3>
-        <div class="flex flex-wrap gap-2">
-          {skills.mobile.map((skill) => <TechBadge name={skill} color="purple" />)}
+  <div>
+    {featuredProjects.map((project, index) => (
+      <section class="plate" id={project.slug} data-plate data-hue style={`--i:${index}`}>
+        <div class="plate-head">
+          <h2
+            class="model"
+            style={`--chars:${project.title.length};--word:${longestWord(project.title)}`}
+          >
+            <a href={`/projects/${project.slug}`}>{project.title}</a>
+          </h2>
         </div>
-      </div>
 
-      <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-        <h3 class="font-semibold mb-3 text-[var(--color-primary)]">🌐 Frontend</h3>
-        <div class="flex flex-wrap gap-2">
-          {skills.frontend.map((skill) => <TechBadge name={skill} color="cyan" />)}
+        <div class="plate-body">
+          <div class="plate-main">
+            <p class="lead">{project.description}</p>
+            <Figure slug={project.slug} label={project.title} />
+          </div>
+          <Ficha project={project} title="Ficha" number={plateNumber(index)} />
         </div>
-      </div>
+      </section>
+    ))}
 
-      <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-        <h3 class="font-semibold mb-3 text-[var(--color-primary)]">⚙️ Backend</h3>
-        <div class="flex flex-wrap gap-2">
-          {skills.backend.map((skill) => <TechBadge name={skill} color="green" />)}
+    <nav class="plate-index" aria-label="Proyectos destacados">
+      <ol>
+        {featuredProjects.map((project, index) => (
+          <li data-hue style={`--i:${index}`}>
+            <a href={`#${project.slug}`} data-plate-link={project.slug}>
+              <span>{plateNumber(index)}</span>
+              <strong>{project.title}</strong>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </div>
+
+  <section class="section">
+    <h2 class="section-title">Tecnologías</h2>
+    <dl class="spec">
+      {Object.entries(skills).map(([group, items]) => (
+        <div>
+          <dt>{group}</dt>
+          <dd>{items.join(', ')}</dd>
         </div>
-      </div>
-
-      <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border)]">
-        <h3 class="font-semibold mb-3 text-[var(--color-primary)]">🛠️ Tools</h3>
-        <div class="flex flex-wrap gap-2">
-          {skills.tools.map((skill) => <TechBadge name={skill} color="orange" />)}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Featured Projects -->
-  <section class="py-12">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold">Proyectos destacados</h2>
-      <a href="/projects" class="text-[var(--color-primary)] hover:underline">
-        Ver todos →
-      </a>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {featuredProjects.map((project) => (
-        <ProjectCard {...project} />
       ))}
-    </div>
+    </dl>
+
+    <p class="act-row">
+      <a class="act" href="/projects">Ver todos <Arrow /></a>
+    </p>
   </section>
 </BaseLayout>
+
+<script>
+  // Marca en el índice la lámina que se está leyendo.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('[data-plate-link]')].map((link) => [
+      link.dataset.plateLink,
+      link,
+    ]),
+  );
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        links.forEach((link) => link.removeAttribute('aria-current'));
+        links.get(entry.target.id)?.setAttribute('aria-current', 'true');
+      }
+    },
+    { rootMargin: '-35% 0px -60% 0px' },
+  );
+
+  // La figura de cada lámina entra una sola vez, cuando la lámina aparece.
+  const reveal = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-in');
+        reveal.unobserve(entry.target);
+      }
+    },
+    { threshold: 0.2 },
+  );
+
+  document.querySelectorAll('[data-plate]').forEach((plate) => {
+    observer.observe(plate);
+    reveal.observe(plate);
+  });
+</script>

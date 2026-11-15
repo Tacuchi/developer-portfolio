@@ -1,0 +1,19 @@
+---
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+  number: number;
+}
+
+const { project, number } = Astro.props;
+---
+
+<li>
+  <span class="index-no">{String(number).padStart(2, '0')}</span>
+  <h3 class="index-name">
+    <a href={`/projects/${project.slug}`}>{project.title}</a>
+  </h3>
+  <p>{project.description}</p>
+  <p class="index-made">{project.tags.join(', ')}</p>
+</li>

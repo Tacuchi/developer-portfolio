@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import TechBadge from '../../components/TechBadge.astro';
+import Arrow from '../../components/Arrow.astro';
+import Ficha from '../../components/Ficha.astro';
+import Figure from '../../components/Figure.astro';
 import { projects } from '../../data/projects';
 
 export function getStaticPaths() {
@@ -11,56 +13,40 @@ export function getStaticPaths() {
 }
 
 const { project } = Astro.props;
+
+const paragraphs = project.longDescription
+  .split(/\n\s*\n/)
+  .map((paragraph) => paragraph.replace(/\s+/g, ' ').trim())
+  .filter(Boolean);
+const longestWord = Math.max(...project.title.split(/\s+/).map((word) => word.length));
 ---
 
 <BaseLayout title={project.title} description={project.description}>
-  <article class="py-8">
-    <a href="/projects" class="text-[var(--color-primary)] hover:underline mb-4 inline-block">
-      ← Volver a proyectos
+  <article class="plate">
+    <a href="/projects" class="inline-flex items-center gap-2 mb-8 text-[0.9375rem]">
+      <Arrow dir="left" /> Volver a proyectos
     </a>
 
-    <h1 class="text-4xl font-bold mb-4">{project.title}</h1>
-
-    <p class="text-xl text-[var(--text-secondary)] mb-6">
-      {project.description}
-    </p>
-
-    <div class="flex flex-wrap gap-2 mb-8">
-      {project.tags.map((tag) => <TechBadge name={tag} />)}
+    <div class="plate-head">
+      <h1 class="model" style={`--chars:${project.title.length};--word:${longestWord}`}>
+        {project.title}
+      </h1>
     </div>
 
-    {project.links.length > 0 && (
-      <div class="flex flex-wrap gap-4 mb-8">
-        {project.links.map((link) => (
-          <a
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg hover:border-[var(--color-primary)] transition-colors"
-          >
-            {link.label} →
-          </a>
-        ))}
-      </div>
-    )}
+    <div class="plate-body">
+      <div class="plate-main">
+        <p class="lead">{project.description}</p>
+        <Figure slug={project.slug} label={project.title} />
 
-    <section class="mb-8">
-      <h2 class="text-2xl font-bold mb-4">Descripción</h2>
-      <div class="prose prose-lg max-w-none text-[var(--text-secondary)] whitespace-pre-line">
-        {project.longDescription}
+        <section class="mt-12">
+          <h2 class="section-title">Descripción</h2>
+          <div class="prose-block">
+            {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
+        </section>
       </div>
-    </section>
 
-    <section>
-      <h2 class="text-2xl font-bold mb-4">Características</h2>
-      <ul class="space-y-2">
-        {project.features.map((feature) => (
-          <li class="flex items-start gap-2 text-[var(--text-secondary)]">
-            <span class="text-[var(--color-primary)]">✓</span>
-            {feature}
-          </li>
-        ))}
-      </ul>
-    </section>
+      <Ficha project={project} title="Características" heading="h2" />
+    </div>
   </article>
 </BaseLayout>

@@ -1,0 +1,99 @@
+---
+// Figura del mecanismo de cada herramienta: solo geometría, sin ilustración.
+// Las etiquetas salen de la descripción del proyecto en src/data/projects.ts.
+interface Flow {
+  kind: 'flow';
+  steps: string[];
+  loop?: { from: number; to: number };
+}
+interface Hub {
+  kind: 'hub';
+  inputs: string[];
+  core: string;
+  outputs?: string[];
+}
+
+const figures: Record<string, Flow | Hub> = {
+  workline: {
+    kind: 'flow',
+    steps: ['Pedido', 'Spec', 'Plan', 'Ejecución'],
+    loop: { from: 3, to: 2 },
+  },
+  'agent-memory': {
+    kind: 'hub',
+    inputs: ['Texto', 'Significado'],
+    core: 'SQLite local',
+    outputs: ['Servicio local', 'Servidor MCP', 'Claude Code'],
+  },
+  'agent-skills': {
+    kind: 'flow',
+    steps: ['10 dominios', '18 skills', 'Ruta y versión exactas'],
+  },
+  'system-updater': {
+    kind: 'flow',
+    steps: ['Detectar', 'Seleccionar', 'Confirmar', 'Actualizar', 'Resumen'],
+  },
+  'emotiva-app': {
+    kind: 'hub',
+    inputs: ['Citas', 'Notificaciones', 'Chat'],
+    core: 'Firebase',
+  },
+};
+
+interface Props {
+  slug: string;
+  label: string;
+}
+
+const { slug, label } = Astro.props;
+const figure = figures[slug];
+---
+
+{figure && (
+  <figure class="figure" aria-label={`Esquema de ${label}`}>
+    {figure.kind === 'flow' && (
+      <div
+        class="flow-wrap"
+        data-n={figure.steps.length}
+        data-loop={figure.loop ? '' : undefined}
+        style={`--n:${figure.steps.length}`}
+      >
+        <ol class="flow">
+          {figure.steps.map((step, index) => (
+            <li
+              class:list={['figure-step', { fill: index === figure.steps.length - 1 }]}
+              style={`--s:${index}`}
+            >
+              {step}
+            </li>
+          ))}
+        </ol>
+        {figure.loop && (
+          <span
+            class="flow-loop"
+            aria-hidden="true"
+            style={`--from:${figure.loop.from};--to:${figure.loop.to}`}
+          />
+        )}
+      </div>
+    )}
+
+    {figure.kind === 'hub' && (
+      <div class="hub" data-out={figure.outputs ? '' : undefined}>
+        <ul class="hub-in">
+          {figure.inputs.map((input) => <li class="figure-step">{input}</li>)}
+        </ul>
+        <span class="hub-arm" aria-hidden="true" />
+        <p class="hub-core figure-step" style="--s:2">{figure.core}</p>
+        {figure.outputs && (
+          <>
+            <span class="hub-arm" aria-hidden="true" />
+            <ul class="hub-out">
+              {figure.outputs.map((output) => <li class="figure-step" style="--s:4">{output}</li>)}
+            </ul>
+          </>
+        )}
+      </div>
+    )}
+  </figure>
+)}

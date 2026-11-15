@@ -1,28 +1,32 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ProjectCard from '../../components/ProjectCard.astro';
+import ProjectRow from '../../components/ProjectRow.astro';
 import { featuredProjects, otherProjects } from '../../data/projects';
 ---
 
 <BaseLayout title="Proyectos" description="Herramientas para agentes de IA, apps móviles y otros proyectos de Jesús Loayza Tacuchi.">
-  <section class="py-8">
-    <h1 class="text-4xl font-bold mb-4">Proyectos</h1>
-    <p class="text-xl text-[var(--text-secondary)] mb-8">
+  <section class="plate">
+    <h1 class="page-title">Proyectos</h1>
+    <p class="lead mt-6">
       Herramientas para agentes de IA, apps móviles y otros proyectos en los que he trabajado.
     </p>
+  </section>
 
-    <h2 class="text-2xl font-bold mb-6">Destacados</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-      {featuredProjects.map((project) => (
-        <ProjectCard {...project} />
+  <section class="pb-4">
+    <h2 class="section-title">Destacados</h2>
+    <ol class="index">
+      {featuredProjects.map((project, index) => (
+        <ProjectRow project={project} number={index + 1} />
       ))}
-    </div>
+    </ol>
+  </section>
 
-    <h2 class="text-2xl font-bold mb-6">Más proyectos</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {otherProjects.map((project) => (
-        <ProjectCard {...project} />
+  <section class="section">
+    <h2 class="section-title">Más proyectos</h2>
+    <ol class="index">
+      {otherProjects.map((project, index) => (
+        <ProjectRow project={project} number={featuredProjects.length + index + 1} />
       ))}
-    </div>
+    </ol>
   </section>
 </BaseLayout>

@@ -42,7 +42,7 @@
   --act-c: 0.125;
   --color-act: oklch(var(--act-l) var(--act-c) var(--hue));
   --color-focus: var(--color-ink);
-  --grid: rgb(17 17 17 / 0.07);
+  --grid: rgb(17 17 17 / 0.085);
   color-scheme: light;
 }
 
@@ -56,7 +56,7 @@
   --act-l: 0.9;
   --act-c: 0.21;
   --color-focus: var(--color-act);
-  --grid: rgb(230 230 226 / 0.06);
+  --grid: rgb(230 230 226 / 0.075);
   color-scheme: dark;
 }
 
@@ -75,6 +75,17 @@
   from { opacity: 0; transform: translateY(0.5rem); }
 }
 
+/* Una cuenta recorre el conector y se queda oculta el resto del ciclo. */
+@keyframes signal {
+  from { background-position: var(--sig-from), center; }
+  14%, to { background-position: var(--sig-to), center; }
+}
+
+/* El retorno punteado avanza en su sentido: un periodo de trazo por vuelta. */
+@keyframes loop-march {
+  to { background-position: var(--march-to); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :root,
   [data-hue] {
@@ -87,6 +98,17 @@
   [data-plate].is-in .figure-step {
     animation: step-in 600ms var(--ease) backwards;
     animation-delay: calc(var(--s, 0) * 80ms);
+  }
+
+  /* Solo en los esquemas de proceso: la señal pasa de pieza en pieza,
+     un conector por turno. Los de estructura no se mueven. */
+  [data-flowing] li + li::before,
+  [data-flowing] .flow-bypass::before {
+    animation: signal 6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    animation-delay: calc(1.2s + (var(--s, 1) - 1) * 0.85s);
+  }
+  [data-flowing] .flow-loop {
+    animation: loop-march 0.8s linear infinite;
   }
 }
 
@@ -227,6 +249,10 @@
     text-wrap: pretty;
   }
   @media (min-width: 64rem) {
+    .figure {
+      --bleed-r: 6rem;
+      --bleed-y: 5rem;
+    }
     .plate {
       padding-block: 2rem 4rem;
       scroll-margin-top: 4.25rem;
@@ -378,19 +404,50 @@
     }
   }
 
-  /* Figura: el mecanismo sobre una cuadrícula de plano */
+  /* Figura: el mecanismo sobre una cuadrícula de plano.
+     El plano no tiene caja: se extiende más allá de la figura y se desvanece. */
   .figure {
+    --signal: var(--color-ink);
+    --bead: 0.5rem;
+    --bleed-x: var(--gutter);
+    --bleed-r: var(--gutter);
+    --bleed-y: 4rem;
+    position: relative;
     display: grid;
     align-content: center;
     margin-top: 1.75rem;
-    padding: 1.5rem;
-    border-radius: var(--r);
-    background-color: var(--color-card);
+    padding-block: 2rem;
+  }
+  :root.dark .figure {
+    --signal: var(--color-act);
+  }
+  .figure::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: calc(var(--bleed-y) * -1) calc(var(--bleed-r) * -1) calc(var(--bleed-y) * -1)
+      calc(var(--bleed-x) * -1);
+    background-color: color-mix(in oklab, var(--color-card) 70%, transparent);
     background-image:
       linear-gradient(var(--grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid) 1px, transparent 1px);
     background-size: 1.5rem 1.5rem;
     background-position: -1px -1px;
+    --fade-x: calc(var(--bleed-x) + 3rem);
+    --fade-r: calc(var(--bleed-r) + 3rem);
+    --fade-y: calc(var(--bleed-y) + 2.5rem);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, rgb(0 0 0 / 0.5) calc(var(--fade-x) * 0.5), #000 var(--fade-x), #000 calc(100% - var(--fade-r)), rgb(0 0 0 / 0.5) calc(100% - var(--fade-r) * 0.5), transparent),
+      linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.5) calc(var(--fade-y) * 0.5), #000 var(--fade-y), #000 calc(100% - var(--fade-y)), rgb(0 0 0 / 0.5) calc(100% - var(--fade-y) * 0.5), transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent, rgb(0 0 0 / 0.5) calc(var(--fade-x) * 0.5), #000 var(--fade-x), #000 calc(100% - var(--fade-r)), rgb(0 0 0 / 0.5) calc(100% - var(--fade-r) * 0.5), transparent),
+      linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.5) calc(var(--fade-y) * 0.5), #000 var(--fade-y), #000 calc(100% - var(--fade-y)), rgb(0 0 0 / 0.5) calc(100% - var(--fade-y) * 0.5), transparent);
+    mask-composite: intersect;
+  }
+  /* Con contenido debajo, el plano se recoge para no meterse bajo el título siguiente. */
+  .figure:not(:last-child) {
+    --bleed-y: 2.5rem;
   }
   .plate-main > .figure:last-child {
     flex: 1;
@@ -411,6 +468,25 @@
   }
   .flow-wrap[data-loop] .flow {
     margin-right: 2.5rem;
+  }
+  .flow-wrap[data-bypass] .flow {
+    margin-left: 2.5rem;
+  }
+
+  /* Conector: una línea de 2px y, encima, la cuenta que la recorre.
+     Sin animación la cuenta queda fuera de la caja, oculta. */
+  .flow li + li::before,
+  .hub-arm::before,
+  .flow-bypass::before {
+    --wire: 2px 100%;
+    --sig-from: 50% calc(var(--bead) * -1);
+    --sig-to: 50% calc(100% + var(--bead));
+    background-image:
+      radial-gradient(circle closest-side, var(--signal) 88%, transparent),
+      linear-gradient(var(--color-ink), var(--color-ink));
+    background-repeat: no-repeat;
+    background-size: var(--bead) var(--bead), var(--wire);
+    background-position: var(--sig-to), center;
   }
   .flow li,
   .hub li,
@@ -438,9 +514,9 @@
     position: absolute;
     left: 50%;
     bottom: calc(100% + 2px);
+    width: var(--bead);
     height: var(--gap);
-    border-left: 2px solid var(--color-ink);
-    transform: translateX(-1px);
+    transform: translateX(-50%);
   }
   .flow li + li::after,
   .hub-arm::after {
@@ -455,13 +531,19 @@
     transform: translateX(-50%) rotate(135deg);
   }
   .flow-loop {
+    --dash-h: repeating-linear-gradient(90deg, var(--color-ink) 0 6px, transparent 6px 10px);
+    --dash-v: repeating-linear-gradient(180deg, var(--color-ink) 0 6px, transparent 6px 10px);
+    --march-to: -10px 0, 100% -10px, 0 100%;
     position: absolute;
     right: 0.75rem;
     width: 1.75rem;
     top: calc(var(--to) * (var(--h) + var(--gap)) + var(--h) / 2);
     height: calc((var(--from) - var(--to)) * (var(--h) + var(--gap)));
-    border: 2px dashed var(--color-ink);
-    border-left: 0;
+    /* Lados: arriba, derecha, abajo. */
+    background-image: var(--dash-h), var(--dash-v), var(--dash-h);
+    background-repeat: no-repeat;
+    background-size: calc(100% + 10px) 2px, 2px calc(100% + 10px), calc(100% + 10px) 2px;
+    background-position: 0 0, 100% 0, -10px 100%;
   }
   .flow-loop::after {
     content: "";
@@ -473,6 +555,51 @@
     border-top: 2px solid var(--color-ink);
     border-right: 2px solid var(--color-ink);
     transform: translate(-50%, -50%) rotate(-135deg);
+  }
+
+  /* Atajo: une dos piezas por fuera de la cadena, con su nombre encima. */
+  .flow-bypass {
+    position: absolute;
+    left: 0.75rem;
+    width: 1.75rem;
+    top: calc(var(--from) * (var(--h) + var(--gap)) + var(--h) / 2);
+    height: calc((var(--to) - var(--from)) * (var(--h) + var(--gap)));
+    border: 2px solid var(--color-ink);
+    border-right: 0;
+  }
+  .flow-bypass::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: 0;
+    width: var(--bead);
+    transform: translateX(-50%);
+    --wire: 0 0;
+  }
+  .flow-bypass::after {
+    content: "";
+    position: absolute;
+    right: 3px;
+    bottom: -1px;
+    width: 0.5625rem;
+    height: 0.5625rem;
+    border-top: 2px solid var(--color-ink);
+    border-right: 2px solid var(--color-ink);
+    transform: translate(50%, 50%) rotate(45deg);
+  }
+  .flow-bypass span {
+    position: absolute;
+    left: -1px;
+    top: 50%;
+    padding: 0.5rem 0.25rem;
+    border-radius: var(--r-s);
+    background-color: var(--color-raise);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1;
+    writing-mode: vertical-rl;
+    transform: translate(-50%, -50%) rotate(180deg);
   }
 
   .hub {
@@ -495,16 +622,20 @@
     left: 50%;
     top: 0;
     bottom: 2px;
-    border-left: 2px solid var(--color-ink);
-    transform: translateX(-1px);
+    width: var(--bead);
+    transform: translateX(-50%);
   }
   .hub-arm::after {
     bottom: 4px;
   }
 
   @media (min-width: 40rem) {
-    .figure {
-      padding: 2rem;
+    .flow li + li::before,
+    .hub-arm::before,
+    .flow-bypass::before {
+      --wire: 100% 2px;
+      --sig-from: calc(var(--bead) * -1) 50%;
+      --sig-to: calc(100% + var(--bead)) 50%;
     }
     .flow-wrap {
       --gap: 2.75rem;
@@ -516,11 +647,15 @@
     .flow-wrap[data-loop] {
       padding-bottom: 1.75rem;
     }
+    .flow-wrap[data-bypass] {
+      padding-top: 3.5rem;
+    }
     .flow,
-    .flow-wrap[data-loop] .flow {
+    .flow-wrap[data-loop] .flow,
+    .flow-wrap[data-bypass] .flow {
       grid-template-columns: repeat(var(--n), minmax(0, 1fr));
       column-gap: var(--gap);
-      margin-right: 0;
+      margin-inline: 0;
       font-size: 1.1875rem;
     }
     .flow-wrap[data-n="5"] .flow {
@@ -532,10 +667,8 @@
       right: calc(100% + 2px);
       top: 50%;
       width: var(--gap);
-      height: 0;
-      border-left: 0;
-      border-top: 2px solid var(--color-ink);
-      transform: translateY(-1px);
+      height: var(--bead);
+      transform: translateY(-50%);
     }
     .flow li + li::after {
       left: auto;
@@ -544,15 +677,52 @@
       top: 50%;
       transform: translateY(-50%) rotate(45deg);
     }
-    .flow-loop {
+    .flow-loop,
+    .flow-bypass {
       --w: calc((100% - (var(--n) - 1) * var(--gap)) / var(--n));
-      top: var(--h);
+    }
+    .flow-loop {
+      --march-to: 100% 0, -10px 100%, 0 -10px;
+      top: calc(100% - 1.75rem);
       right: auto;
       left: calc(var(--to) * (var(--w) + var(--gap)) + var(--w) / 2);
       width: calc((var(--from) - var(--to)) * (var(--w) + var(--gap)));
       height: 1.5rem;
-      border: 2px dashed var(--color-ink);
-      border-top: 0;
+      /* Lados: derecha, abajo, izquierda. */
+      background-image: var(--dash-v), var(--dash-h), var(--dash-v);
+      background-size: 2px calc(100% + 10px), calc(100% + 10px) 2px, 2px calc(100% + 10px);
+      background-position: 100% -10px, 0 100%, 0 0;
+    }
+    .flow-bypass {
+      top: 1.25rem;
+      left: calc(var(--from) * (var(--w) + var(--gap)) + var(--w) / 2);
+      width: calc((var(--to) - var(--from)) * (var(--w) + var(--gap)));
+      height: calc(3.5rem - 1.25rem - 2px);
+      border: 2px solid var(--color-ink);
+      border-bottom: 0;
+    }
+    .flow-bypass::before {
+      left: 0;
+      right: 0;
+      top: -1px;
+      bottom: auto;
+      width: auto;
+      height: var(--bead);
+      transform: translateY(-50%);
+      --wire: 0 0;
+    }
+    .flow-bypass::after {
+      right: -1px;
+      bottom: 3px;
+      transform: translate(50%, 50%) rotate(135deg);
+    }
+    .flow-bypass span {
+      left: 50%;
+      top: -1px;
+      padding: 0.4375rem 0.75rem;
+      font-size: 0.9375rem;
+      writing-mode: horizontal-tb;
+      transform: translate(-50%, -50%);
     }
     .flow-loop::after {
       left: -1px;
@@ -625,9 +795,9 @@
       right: 0;
       top: 0;
       bottom: auto;
-      border-left: 0;
-      border-top: 2px solid var(--color-ink);
-      transform: translateY(-1px);
+      width: auto;
+      height: var(--bead);
+      transform: translateY(-50%);
     }
     .hub-arm::after {
       left: auto;
@@ -763,6 +933,17 @@
     }
   }
 
+  /* Resaltado: el acento como relleno bajo una frase, nunca como color de texto */
+  mark {
+    padding: 0.02em 0.22em 0.06em;
+    margin-inline: -0.04em;
+    border-radius: 0.25em;
+    background-color: var(--color-act);
+    color: var(--color-on-act);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
   /* Trayectoria: una caja por puesto */
   .job {
     display: grid;
@@ -785,6 +966,16 @@
   .job-client {
     color: var(--color-mute);
   }
+  /* El puesto vigente lleva su periodo sobre el acento */
+  .job-period[data-current] {
+    justify-self: start;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--r-s);
+    background-color: var(--color-act);
+    color: var(--color-on-act);
+    font-weight: 700;
+    white-space: nowrap;
+  }
   .job-desc {
     margin-top: 0.5rem;
     max-width: 68ch;
@@ -795,7 +986,7 @@
   }
   @media (min-width: 64rem) {
     .job {
-      grid-template-columns: 10rem 4fr 6fr;
+      grid-template-columns: 11.5rem 4fr 6fr;
       grid-template-rows: auto auto 1fr auto;
       grid-template-areas:
         "period role desc"

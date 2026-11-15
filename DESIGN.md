@@ -126,13 +126,13 @@ Papel gris neutro, tinta casi negra y un único acento lima.
 - **Papel** (`paper`): fondo de página.
 - **Tinta** (`ink`): texto y conectores de las figuras.
 - **Gris de apoyo** (`mute`): texto secundario.
-- **Caja** (`card`): fondo de cajas, pestañas y del plano de la figura.
+- **Caja** (`card`): fondo de cajas y pestañas; tiñe, difuminado, el plano de la figura.
 - **Pieza** (`raise`): cajas de paso dentro de la figura.
 - **Placa** (`panel`, `panel-ink`, `panel-mute`): la ficha y el estado activo o de paso del cursor.
 - Las variantes `-dark` son el tema oscuro, compuesto aparte: la placa se aclara (`panel-dark`) en vez de invertirse.
 
 ### Named Rules
-**La regla del relleno.** La lima nunca es texto ni trazo fino sobre el papel claro. Va como relleno con texto `on-act` encima, o como número sobre la placa oscura.
+**La regla del relleno.** La lima nunca es texto ni trazo fino sobre el papel claro. Va como relleno con texto `on-act` encima, o como número sobre la placa oscura. El resaltado de una frase (`mark`) y el periodo del puesto vigente siguen la misma regla: relleno lima, texto `on-act`.
 
 **La regla del tono propio.** Cada lámina y cada pestaña lleva su propio tono del acento (`data-hue` con índice `--i`).
 
@@ -173,7 +173,7 @@ Plano. La profundidad se da por tono: papel, caja, pieza y placa. No hay sombras
 
 ## Shapes
 
-Cajas rectangulares con esquinas apenas redondeadas (`rounded.md` en cajas, `rounded.sm` en piezas y botones). Los únicos trazos son los conectores y flechas de las figuras (2px en tinta) y la cuadrícula del plano (24px).
+Cajas rectangulares con esquinas apenas redondeadas (`rounded.md` en cajas, `rounded.sm` en piezas y botones). Los únicos trazos son los conectores y flechas de las figuras (2px en tinta) y la cuadrícula del plano (24px), que no tiene borde: se desvanece.
 
 ## Components
 
@@ -193,9 +193,10 @@ Cajas rectangulares con esquinas apenas redondeadas (`rounded.md` en cajas, `rou
 - **Selector de tema:** tres opciones de texto en el pie; la activa lleva un punto lima.
 
 ### Figura
-- **Plano:** caja `card` con cuadrícula de 24px.
+- **Plano:** cuadrícula de 24px sin caja. Se extiende más allá de la figura y se desvanece hacia los cuatro lados; pasa por detrás del texto y de la ficha.
 - **Piezas:** cajas `raise`; la pieza clave va en lima. Conectores y flechas en tinta.
-- **Movimiento:** las piezas entran en orden una sola vez cuando aparece la lámina.
+- **Atajo:** una ruta que salta pasos va por fuera de la cadena, con su nombre en una pieza pequeña sobre la línea (en Workline, «Quick»).
+- **Movimiento:** las piezas entran en orden una sola vez cuando aparece la lámina. Después, solo en los esquemas que representan un proceso (Workline y system-updater), una cuenta recorre cada conector por turno (ciclo de 6 s; tinta en claro, lima en oscuro) y el retorno punteado avanza en su sentido. Los esquemas de estructura (agent-memory, agent-skills, Emotiva) no se mueven.
 - Solo geometría: flujo en cadena o entradas, núcleo y salidas. En móvil la figura pasa a vertical.
 
 ## Do's and Don'ts
@@ -204,7 +205,8 @@ Cajas rectangulares con esquinas apenas redondeadas (`rounded.md` en cajas, `rou
 - **Do** separar con cajas de tono o con espacio.
 - **Do** usar la lima solo como relleno con texto negro, o como número sobre la placa.
 - **Do** dejar que los proyectos lleven el peso; el nombre de la persona va en la franja.
-- **Do** respetar `prefers-reduced-motion`: sin deriva de tono ni entradas.
+- **Do** respetar `prefers-reduced-motion`: sin deriva de tono, entradas, cuenta ni marcha del retorno.
+- **Do** resaltar como mucho una o dos frases por página con `mark`.
 
 ### Don't:
 - **Don't** añadir reglas, bordes ni sombras.

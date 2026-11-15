@@ -25,12 +25,12 @@ const areas = [
 
     <p class="lead mt-6" style="max-width: 46rem">
       Soy <strong>{site.name}</strong> ({site.alias}), ingeniero de software senior.
-      Programo desde 2014 y lo sigo haciendo por lo mismo que empecé: curiosidad.
+      Programo desde 2014 y lo sigo haciendo por lo mismo que empecé: <mark>curiosidad</mark>.
       Me gusta entender cómo y por qué funciona algo antes de usarlo.
     </p>
 
     <p class="lead mt-4" style="max-width: 46rem">
-      Construyo herramientas para que los agentes de IA trabajen con orden: un flujo de specs
+      Construyo <mark>herramientas para que los agentes de IA trabajen con orden</mark>: un flujo de specs
       y planes, una memoria local y un catálogo de skills. Vengo de hacer apps móviles y
       plataformas web, y eso sigo haciendo en mi trabajo. Si algo de aquí te sirve, el código
       y los paquetes están enlazados en cada proyecto.
@@ -53,7 +53,9 @@ const areas = [
       {experience.map((exp) => (
         <div data-experience class="job">
           <h3>{exp.role}</h3>
-          <span class="job-period">{exp.period}</span>
+          <span class="job-period" data-current={exp.period.endsWith('actualidad') ? '' : undefined}>
+            {exp.period}
+          </span>
           <p class="job-company">
             {exp.employer}
             {exp.client && <span class="job-client"> · Cliente: {exp.client}</span>}

@@ -5,6 +5,11 @@ interface Flow {
   kind: 'flow';
   steps: string[];
   loop?: { from: number; to: number };
+  // Atajo que salta pasos: va de una pieza a otra por fuera de la cadena.
+  bypass?: { from: number; to: number; label: string };
+  // Solo los esquemas que representan un proceso llevan la señal en movimiento;
+  // los que muestran estructura se quedan quietos.
+  flowing?: boolean;
 }
 interface Hub {
   kind: 'hub';
@@ -18,6 +23,8 @@ const figures: Record<string, Flow | Hub> = {
     kind: 'flow',
     steps: ['Pedido', 'Spec', 'Plan', 'Ejecución'],
     loop: { from: 3, to: 2 },
+    bypass: { from: 0, to: 3, label: 'Quick' },
+    flowing: true,
   },
   'agent-memory': {
     kind: 'hub',
@@ -32,6 +39,7 @@ const figures: Record<string, Flow | Hub> = {
   'system-updater': {
     kind: 'flow',
     steps: ['Detectar', 'Seleccionar', 'Confirmar', 'Actualizar', 'Resumen'],
+    flowing: true,
   },
   'emotiva-app': {
     kind: 'hub',
@@ -56,6 +64,8 @@ const figure = figures[slug];
         class="flow-wrap"
         data-n={figure.steps.length}
         data-loop={figure.loop ? '' : undefined}
+        data-bypass={figure.bypass ? '' : undefined}
+        data-flowing={figure.flowing ? '' : undefined}
         style={`--n:${figure.steps.length}`}
       >
         <ol class="flow">
@@ -74,6 +84,14 @@ const figure = figures[slug];
             aria-hidden="true"
             style={`--from:${figure.loop.from};--to:${figure.loop.to}`}
           />
+        )}
+        {figure.bypass && (
+          <p
+            class="flow-bypass"
+            style={`--from:${figure.bypass.from};--to:${figure.bypass.to};--s:${figure.steps.length + 1}`}
+          >
+            <span>{figure.bypass.label}</span>
+          </p>
         )}
       </div>
     )}

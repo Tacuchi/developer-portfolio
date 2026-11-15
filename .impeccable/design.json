@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T21:30:00-05:00",
+  "title": "Design System: tacuchi.dev",
+  "extensions": {
+    "colorMeta": {
+      "act": {
+        "role": "primary",
+        "displayName": "Lima",
+        "canonical": "oklch(0.87 0.125 128)",
+        "tonalRamp": [
+          "oklch(0.2 0.04 128)",
+          "oklch(0.32 0.07 128)",
+          "oklch(0.44 0.1 128)",
+          "oklch(0.56 0.13 128)",
+          "oklch(0.68 0.15 128)",
+          "oklch(0.79 0.15 128)",
+          "oklch(0.87 0.125 128)",
+          "oklch(0.95 0.06 128)"
+        ]
+      },
+      "act-dark": {
+        "role": "primary",
+        "displayName": "Lima fosforescente",
+        "canonical": "oklch(0.9 0.21 128)",
+        "tonalRamp": [
+          "oklch(0.2 0.05 128)",
+          "oklch(0.32 0.09 128)",
+          "oklch(0.44 0.13 128)",
+          "oklch(0.56 0.16 128)",
+          "oklch(0.68 0.19 128)",
+          "oklch(0.8 0.21 128)",
+          "oklch(0.9 0.21 128)",
+          "oklch(0.96 0.1 128)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#e6e6e2",
+        "tonalRamp": ["#121211", "#262624", "#3b3b37", "#5c5c56", "#a3a39b", "#d9d9d4", "#e6e6e2", "#f1f1ee"]
+      },
+      "ink": { "role": "neutral", "displayName": "Tinta", "canonical": "#111111" },
+      "mute": { "role": "neutral", "displayName": "Gris de apoyo", "canonical": "#5c5c56" },
+      "card": { "role": "neutral", "displayName": "Caja", "canonical": "#d9d9d4" },
+      "raise": { "role": "neutral", "displayName": "Pieza", "canonical": "#f1f1ee" },
+      "panel": { "role": "neutral", "displayName": "Placa", "canonical": "#111111" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Nombre de modelo; su cuerpo se ajusta para llenar la fila." },
+      "headline": { "displayName": "Headline", "purpose": "Títulos de sección." },
+      "title": { "displayName": "Title", "purpose": "Cargo en la trayectoria y títulos de caja." },
+      "lead": { "displayName": "Lead", "purpose": "Frase de cada herramienta." },
+      "body": { "displayName": "Body", "purpose": "Texto corrido, máximo 68ch." },
+      "label": { "displayName": "Label", "purpose": "Rótulo de la ficha, en mayúsculas." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Curva de todos los cambios de estado y de la entrada de la figura." },
+      { "name": "hue-drift", "value": "26s ease-in-out infinite alternate; --hue 118 → 160", "purpose": "Deriva lenta del tono del acento, desfasada 6.5 s por lámina." },
+      { "name": "step-in", "value": "600ms, retraso de 80ms por pieza", "purpose": "Entrada en orden de las piezas de la figura, una sola vez." },
+      { "name": "state", "value": "120ms a 160ms", "purpose": "Paso del cursor en botones, pestañas y cajas de proyecto." }
+    ],
+    "breakpoints": [
+      { "name": "figure", "value": "40rem" },
+      { "name": "index", "value": "48rem" },
+      { "name": "desktop", "value": "64rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón",
+      "kind": "button",
+      "refersTo": "button",
+      "description": "Acción principal: enlaces a GitHub, npm, contacto.",
+      "html": "<a class=\"ds-act\" href=\"#\">Ver en GitHub</a>",
+      "css": ".ds-act { display: inline-flex; align-items: center; padding: 0.625rem 1.125rem; border-radius: 0.375rem; background: oklch(0.87 0.125 128); color: #111111; font: 700 1.0625rem/1.5 Archivo, 'Helvetica Neue', Arial, sans-serif; text-decoration: none; transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-act:hover { transform: translateY(-2px); } .ds-act:focus-visible { outline: 2px solid #111111; outline-offset: 3px; }"
+    },
+    {
+      "name": "Ficha",
+      "kind": "card",
+      "refersTo": "ficha",
+      "description": "Placa oscura con las características numeradas de una herramienta.",
+      "html": "<aside class=\"ds-ficha\"><p class=\"ds-ficha-title\">Ficha <span>01</span></p><ol><li>Flujos SPEC, PLAN y QUICK</li><li>Git seguro: propone los commits</li></ol></aside>",
+      "css": ".ds-ficha { padding: 0.75rem 1.5rem 1.5rem; border-radius: 0.5rem; background: #111111; color: #e6e6e2; font: 400 1.0625rem/1.35 Archivo, 'Helvetica Neue', Arial, sans-serif; } .ds-ficha-title { display: flex; justify-content: space-between; margin: 0; padding: 0.75rem 0; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.87 0.125 128); } .ds-ficha ol { margin: 0; padding: 0; list-style: none; counter-reset: fila; } .ds-ficha li { counter-increment: fila; display: grid; grid-template-columns: 2.75rem 1fr; padding: 0.5625rem 0; } .ds-ficha li::before { content: counter(fila); color: oklch(0.87 0.125 128); font-weight: 700; }"
+    },
+    {
+      "name": "Caja de proyecto",
+      "kind": "card",
+      "refersTo": "box",
+      "description": "Fila del índice de proyectos; se vuelve placa al pasar el cursor.",
+      "html": "<div class=\"ds-box\"><span class=\"ds-box-no\">01</span><strong>Workline</strong></div>",
+      "css": ".ds-box { display: grid; grid-template-columns: 3rem 1fr; align-items: baseline; padding: 1.125rem 1.5rem 1.25rem; border-radius: 0.5rem; background: #d9d9d4; color: #111111; font: 700 2.25rem/1.05 Archivo, 'Helvetica Neue', Arial, sans-serif; letter-spacing: -0.03em; transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1), color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-box-no { font-size: 0.9375rem; font-weight: 400; letter-spacing: 0; color: #5c5c56; } .ds-box:hover { background: #111111; color: #e6e6e2; } .ds-box:hover .ds-box-no { color: oklch(0.87 0.125 128); }"
+    },
+    {
+      "name": "Figura",
+      "kind": "custom",
+      "refersTo": "figure-step",
+      "description": "Mecanismo de una herramienta sobre cuadrícula de plano; la pieza clave va en lima.",
+      "html": "<div class=\"ds-figure\"><span class=\"ds-step\">Plan</span><span class=\"ds-step ds-step-key\">Ejecución</span></div>",
+      "css": ".ds-figure { display: grid; grid-template-columns: 1fr 1fr; gap: 2.75rem; padding: 2rem; border-radius: 0.5rem; background-color: #d9d9d4; background-image: linear-gradient(rgb(17 17 17 / 0.07) 1px, transparent 1px), linear-gradient(90deg, rgb(17 17 17 / 0.07) 1px, transparent 1px); background-size: 1.5rem 1.5rem; } .ds-step { display: grid; place-items: center; height: 4.25rem; border-radius: 0.375rem; background: #f1f1ee; color: #111111; font: 700 1.1875rem/1.1 Archivo, 'Helvetica Neue', Arial, sans-serif; } .ds-step-key { background: oklch(0.87 0.125 128); }"
+    },
+    {
+      "name": "Pestaña del índice",
+      "kind": "nav",
+      "refersTo": "index-tab-current",
+      "description": "Índice de láminas fijo al pie; la lámina visible va como placa.",
+      "html": "<nav class=\"ds-tabs\"><a class=\"ds-tab\" aria-current=\"true\" href=\"#\"><span>01</span><strong>Workline</strong></a><a class=\"ds-tab\" href=\"#\"><span>02</span><strong>agent-memory</strong></a></nav>",
+      "css": ".ds-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.375rem; } .ds-tab { display: block; padding: 0.625rem 0.875rem 0.75rem; border-radius: 0.5rem; background: #d9d9d4; color: #5c5c56; text-decoration: none; font-family: Archivo, 'Helvetica Neue', Arial, sans-serif; transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1), color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-tab span { display: block; font-size: 0.8125rem; } .ds-tab strong { display: block; margin-top: 0.25rem; font-size: 1.5rem; letter-spacing: -0.03em; line-height: 1.1; } .ds-tab:hover { color: #111111; } .ds-tab[aria-current=\"true\"] { background: #111111; color: #e6e6e2; } .ds-tab[aria-current=\"true\"] span { color: oklch(0.87 0.125 128); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La ficha técnica",
+    "overview": "Cada herramienta se presenta como un producto de catálogo industrial: nombre de modelo enorme, una figura de su mecanismo sobre cuadrícula de plano y una ficha numerada. El nombre de la persona va detrás de las herramientas, en una franja discreta.\n\nEl sistema es sobrio y plano. No hay reglas ni sombras: todo se separa por cajas de tono. El único color es un acento lima que solo aparece como relleno y que deriva despacio de tono.",
+    "keyCharacteristics": [
+      "Una sola familia tipográfica (Archivo) hace todo el trabajo.",
+      "Cajas de tono en lugar de líneas; una placa oscura para la ficha.",
+      "Acento lima apagado en claro y fosforescente en oscuro.",
+      "Figuras hechas solo de geometría, sin ilustración.",
+      "Movimiento lento y escaso; nada con «reducir movimiento»."
+    ],
+    "rules": [
+      { "name": "La regla del relleno", "body": "La lima nunca es texto ni trazo fino sobre el papel claro. Va como relleno con texto `on-act` encima, o como número sobre la placa oscura.", "section": "colors" },
+      { "name": "La regla del tono propio", "body": "Cada lámina y cada pestaña lleva su propio tono del acento (`data-hue` con índice `--i`).", "section": "colors" },
+      { "name": "La regla del nombre a medida", "body": "El nombre de modelo nunca se parte en escritorio: su cuerpo baja hasta caber en la fila.", "section": "typography" },
+      { "name": "La regla sin líneas", "body": "Ninguna regla separa contenido. Si dos cosas deben separarse, van en cajas distintas o con espacio.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do separar con cajas de tono o con espacio.",
+      "Do usar la lima solo como relleno con texto negro, o como número sobre la placa.",
+      "Do dejar que los proyectos lleven el peso; el nombre de la persona va en la franja.",
+      "Do respetar `prefers-reduced-motion`: sin deriva de tono ni entradas."
+    ],
+    "donts": [
+      "Don't añadir reglas, bordes ni sombras.",
+      "Don't usar la lima como texto o trazo fino sobre el papel claro.",
+      "Don't añadir emoji, insignias de tecnología ni una portada «Hola, soy».",
+      "Don't sumar animación llamativa: el movimiento es lento y escaso.",
+      "Don't usar una segunda familia tipográfica."
+    ]
+  }
+}

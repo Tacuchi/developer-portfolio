@@ -18,7 +18,9 @@ const PROFILES = [
   'https://www.npmjs.com/~tacuchi',
 ];
 const FEATURED = ['workline', 'agent-memory', 'agent-skills', 'system-updater', 'emotiva-app'];
-const OTHERS = ['let-me-know', 'soundfua-desktop', 'ui-spec-generator', 'developer-portfolio'];
+const OTHERS = ['family-rag', 'soundfua-desktop', 'ui-spec-generator', 'developer-portfolio'];
+// Proyectos con código privado: no deben enlazar a un repo ni a un paquete.
+const PRIVATE = ['emotiva-app', 'family-rag'];
 // [periodo, empleador, cliente, cargo], del más reciente al más antiguo.
 const EXPERIENCE = [
   ['11/2024 – actualidad', 'QTC Servicios Financieros', null, 'Analista Programador Senior'],
@@ -172,15 +174,15 @@ const isPackage = (href) => /^https:\/\/www\.npmjs\.com\/package\/.+/.test(href)
 for (const slug of [...FEATURED, ...OTHERS]) {
   expect(htmlOf.has(`/projects/${slug}/`), `proyectos: falta la página de detalle de ${slug}`);
 }
-for (const slug of FEATURED) {
-  const links = hrefs(htmlOf.get(`/projects/${slug}/`) ?? '');
-  const hasCode = links.some((href) => isRepo(href) || isPackage(href));
-  if (slug === 'emotiva-app') {
-    expect(!hasCode, 'proyectos: Emotiva no debe enlazar a código');
-  } else {
-    expect(hasCode, `proyectos: ${slug} debe enlazar a su repo o a su paquete`);
-  }
+const hasCode = (slug) =>
+  hrefs(htmlOf.get(`/projects/${slug}/`) ?? '').some((href) => isRepo(href) || isPackage(href));
+for (const slug of FEATURED.filter((slug) => !PRIVATE.includes(slug))) {
+  expect(hasCode(slug), `proyectos: ${slug} debe enlazar a su repo o a su paquete`);
 }
+for (const slug of PRIVATE) {
+  expect(!hasCode(slug), `proyectos: ${slug} no debe enlazar a código`);
+}
+expect(!htmlOf.has('/projects/let-me-know/'), 'proyectos: Let Me Know ya no se publica');
 const memoryLinks = hrefs(htmlOf.get('/projects/agent-memory/') ?? '');
 expect(
   memoryLinks.includes('https://www.npmjs.com/package/@tacuchi/agent-memory'),

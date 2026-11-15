@@ -14,8 +14,8 @@ export const experience: Experience[] = [
     employer: 'QTC Servicios Financieros',
     role: 'Analista Programador Senior (Web, Backend)',
     description:
-      'Desarrollo y mantenimiento de plataformas web y servicios backend para la evaluación y gestión de créditos. Integración de pagos en línea mediante APIs. Optimización de consultas y reportes en base de datos.',
-    tech: ['Angular', 'Spring Boot', 'PostgreSQL'],
+      'Desarrollo de plataformas web y servicios backend para la evaluación y gestión de créditos, incluido el motor de decisión. Migración de servicios a contenedores y Kubernetes. Modelo de permisos por roles y endurecimiento de sesiones. Plataforma interna de asistentes de IA para el equipo de desarrollo: servidores MCP, memoria compartida y un catálogo de plugins para agentes de código.',
+    tech: ['Angular', 'Spring Boot', 'PostgreSQL', 'Kubernetes', 'MCP'],
   },
   {
     period: '09/2023 – 08/2024',

@@ -142,26 +142,29 @@ export const projects: Project[] = [
     ],
   },
   {
-    slug: 'let-me-know',
-    title: 'Let Me Know',
+    slug: 'family-rag',
+    title: 'family-rag',
     description:
-      'Aplicación de recordatorios por voz para adultos y adultos mayores. Utiliza reconocimiento de voz y text-to-speech para una experiencia accesible.',
+      'Asistente familiar con memoria: un agente de IA que conversa por Telegram, recuerda datos y recordatorios de la familia y los busca con RAG híbrido.',
     longDescription: `
-      Let Me Know es una aplicación de recordatorios diseñada específicamente para adultos y adultos mayores.
-      Utiliza reconocimiento de voz para crear recordatorios de forma natural y text-to-speech para
-      notificar al usuario de manera accesible.
+      family-rag es un asistente personal para mi familia. Cada miembro le escribe por Telegram:
+      el agente guarda lo que importa, lo recuerda cuando hace falta y avisa de los recordatorios.
 
-      La arquitectura sigue el patrón BLoC para la gestión de estado, con Drift como base de datos local
-      y un sistema de notificaciones locales para los recordatorios.
+      Está separado en dos planos. El plano de datos guarda los hechos y la memoria en SQLite,
+      con búsqueda por texto y por significado, y es el único que toca la base. El plano de agente
+      conecta el modelo de IA con esos datos y aplica permisos por rol y por miembro antes de
+      cada consulta. Un panel web administra familias, miembros, memorias y aprobaciones.
+
+      Es un proyecto personal y privado: el código no es público.
     `,
-    tags: ['Flutter', 'Dart', 'BLoC', 'Drift', 'SQLite', 'Speech-to-Text', 'TTS'],
-    links: [github('let-me-know')],
+    tags: ['Python', 'FastAPI', 'SQLite', 'RAG', 'SvelteKit', 'TypeScript'],
+    links: [],
     features: [
-      'Reconocimiento de voz para crear recordatorios',
-      'Text-to-Speech para notificaciones accesibles',
-      'Notificaciones locales programadas',
-      'Persistencia con Drift/SQLite',
-      'UI adaptada para adultos mayores',
+      'Búsqueda híbrida: vectores y texto completo, con fusión RRF',
+      'Hechos con vigencia: un dato nuevo invalida al anterior',
+      'Permisos por rol y por miembro antes de cada consulta',
+      'Recordatorios y resumen diario por Telegram',
+      'Panel web de administración y despliegue automático desde CI',
     ],
   },
   {
@@ -206,19 +209,22 @@ export const projects: Project[] = [
     slug: 'developer-portfolio',
     title: 'Developer Portfolio',
     description:
-      'Este mismo sitio web. Portafolio personal construido con Astro, Preact y Tailwind CSS.',
+      'Este mismo sitio web. Un catálogo de fichas técnicas construido con Astro, Preact y Tailwind CSS.',
     longDescription: `
-      Este mismo sitio web. Un portafolio personal construido con Astro, Preact y Tailwind CSS.
-      Incluye soporte para temas claro/oscuro/sistema con persistencia en localStorage.
+      Este mismo sitio web. Cada proyecto se presenta como una ficha técnica: nombre, esquema de su
+      mecanismo y características numeradas.
+
+      Los datos del perfil, los proyectos y la trayectoria se definen una sola vez, y un script
+      comprueba el HTML generado antes de publicar.
     `,
     tags: ['Astro', 'Preact', 'Tailwind CSS', 'Nanostores', 'TypeScript'],
     links: [],
     features: [
       'Generación estática con Astro',
-      'Componentes interactivos con Preact',
-      'Sistema de temas con Nanostores',
-      'Diseño responsive con Tailwind',
-      'SEO optimizado',
+      'Perfil, proyectos y trayectoria definidos una sola vez',
+      'Comprobación automática del HTML generado',
+      'Temas claro, oscuro y de sistema',
+      'Datos estructurados, vista previa al compartir y sitemap',
     ],
   },
 ];

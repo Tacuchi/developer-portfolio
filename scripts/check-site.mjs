@@ -19,7 +19,7 @@ const PROFILES = [
   'https://www.linkedin.com/in/tacuchi',
   'https://www.npmjs.com/~tacuchi',
 ];
-const FEATURED = ['workline', 'agent-memory', 'agent-skills', 'system-updater', 'emotiva-app'];
+const FEATURED = ['agent-workflow', 'agent-memory', 'agent-skills', 'system-updater', 'emotiva-app'];
 const OTHERS = ['family-rag', 'soundfua-desktop', 'ui-spec-generator', 'developer-portfolio'];
 // Proyectos con código privado: no deben enlazar a un repo ni a un paquete.
 const PRIVATE = ['emotiva-app', 'family-rag'];
@@ -185,6 +185,10 @@ for (const slug of PRIVATE) {
   expect(!hasCode(slug), `proyectos: ${slug} no debe enlazar a código`);
 }
 expect(!htmlOf.has('/projects/let-me-know/'), 'proyectos: Let Me Know ya no se publica');
+// agent-workflow se llamó Workline: ese nombre no vuelve a publicarse.
+for (const file of files.filter((f) => /\.(html|xml|txt|json)$/.test(f))) {
+  expect(!/workline/i.test(readFileSync(file, 'utf8')), `${relative(dist, file)}: contiene el nombre anterior de agent-workflow`);
+}
 const memoryLinks = hrefs(htmlOf.get('/projects/agent-memory/') ?? '');
 expect(
   memoryLinks.includes('https://www.npmjs.com/package/@tacuchi/agent-memory'),

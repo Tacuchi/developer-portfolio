@@ -19,7 +19,7 @@ interface Hub {
 }
 
 const figures: Record<string, Flow | Hub> = {
-  workline: {
+  'agent-workflow': {
     kind: 'flow',
     steps: ['Pedido', 'Spec', 'Plan', 'Ejecución'],
     loop: { from: 3, to: 2 },

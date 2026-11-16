@@ -89,7 +89,7 @@
       "kind": "card",
       "refersTo": "box",
       "description": "Fila del índice de proyectos; se vuelve placa al pasar el cursor.",
-      "html": "<div class=\"ds-box\"><span class=\"ds-box-no\">01</span><strong>Workline</strong></div>",
+      "html": "<div class=\"ds-box\"><span class=\"ds-box-no\">01</span><strong>agent-workflow</strong></div>",
       "css": ".ds-box { display: grid; grid-template-columns: 3rem 1fr; align-items: baseline; padding: 1.125rem 1.5rem 1.25rem; border-radius: 0.5rem; background: #d9d9d4; color: #111111; font: 700 2.25rem/1.05 Archivo, 'Helvetica Neue', Arial, sans-serif; letter-spacing: -0.03em; transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1), color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-box-no { font-size: 0.9375rem; font-weight: 400; letter-spacing: 0; color: #5c5c56; } .ds-box:hover { background: #111111; color: #e6e6e2; } .ds-box:hover .ds-box-no { color: oklch(0.87 0.125 128); }"
     },
     {
@@ -105,7 +105,7 @@
       "kind": "nav",
       "refersTo": "index-tab-current",
       "description": "Índice de láminas fijo al pie; la lámina visible va como placa.",
-      "html": "<nav class=\"ds-tabs\"><a class=\"ds-tab\" aria-current=\"true\" href=\"#\"><span>01</span><strong>Workline</strong></a><a class=\"ds-tab\" href=\"#\"><span>02</span><strong>agent-memory</strong></a></nav>",
+      "html": "<nav class=\"ds-tabs\"><a class=\"ds-tab\" aria-current=\"true\" href=\"#\"><span>01</span><strong>agent-workflow</strong></a><a class=\"ds-tab\" href=\"#\"><span>02</span><strong>agent-memory</strong></a></nav>",
       "css": ".ds-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.375rem; } .ds-tab { display: block; padding: 0.625rem 0.875rem 0.75rem; border-radius: 0.5rem; background: #d9d9d4; color: #5c5c56; text-decoration: none; font-family: Archivo, 'Helvetica Neue', Arial, sans-serif; transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1), color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-tab span { display: block; font-size: 0.8125rem; } .ds-tab strong { display: block; margin-top: 0.25rem; font-size: 1.5rem; letter-spacing: -0.03em; line-height: 1.1; } .ds-tab:hover { color: #111111; } .ds-tab[aria-current=\"true\"] { background: #111111; color: #e6e6e2; } .ds-tab[aria-current=\"true\"] span { color: oklch(0.87 0.125 128); }"
     }
   ],

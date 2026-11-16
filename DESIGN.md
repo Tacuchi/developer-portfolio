@@ -195,8 +195,8 @@ Cajas rectangulares con esquinas apenas redondeadas (`rounded.md` en cajas, `rou
 ### Figura
 - **Plano:** cuadrícula de 24px sin caja. Se extiende más allá de la figura y se desvanece hacia los cuatro lados; pasa por detrás del texto y de la ficha.
 - **Piezas:** cajas `raise`; la pieza clave va en lima. Conectores y flechas en tinta.
-- **Atajo:** una ruta que salta pasos va por fuera de la cadena, con su nombre en una pieza pequeña sobre la línea (en Workline, «Quick»).
-- **Movimiento:** las piezas entran en orden una sola vez cuando aparece la lámina. Después, solo en los esquemas que representan un proceso (Workline y system-updater), una cuenta recorre cada conector por turno (ciclo de 6 s; tinta en claro, lima en oscuro) y el retorno punteado avanza en su sentido. Los esquemas de estructura (agent-memory, agent-skills, Emotiva) no se mueven.
+- **Atajo:** una ruta que salta pasos va por fuera de la cadena, con su nombre en una pieza pequeña sobre la línea (en agent-workflow, «Quick»).
+- **Movimiento:** las piezas entran en orden una sola vez cuando aparece la lámina. Después, solo en los esquemas que representan un proceso (agent-workflow y system-updater), una cuenta recorre cada conector por turno (ciclo de 6 s; tinta en claro, lima en oscuro) y el retorno punteado avanza en su sentido. Los esquemas de estructura (agent-memory, agent-skills, Emotiva) no se mueven.
 - Solo geometría: flujo en cadena o entradas, núcleo y salidas. En móvil la figura pasa a vertical.
 
 ## Do's and Don'ts

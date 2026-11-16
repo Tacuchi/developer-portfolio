@@ -27,17 +27,17 @@ const npm = (pkg: string): ProjectLink => ({
 // El orden de este arreglo es el orden en que se muestran.
 export const projects: Project[] = [
   {
-    slug: 'workline',
-    title: 'Workline',
+    slug: 'agent-workflow',
+    title: 'agent-workflow',
     featured: true,
     description:
       'Sistema de trabajo para agentes de código: lleva un pedido de spec a plan y a ejecución verificable, con la CLI aw.',
     longDescription: `
-      Workline organiza el trabajo con agentes de código en etapas, bucles y artefactos.
+      agent-workflow organiza el trabajo con agentes de código en etapas, bucles y artefactos.
       Un requerimiento pasa de borrador a spec refinada, de ahí a un plan de fases verificables
       y luego a la ejecución, con commits que la persona aprueba.
 
-      La CLI (agent-workflow, o aw) no depende del host: instala los mismos comandos
+      Su CLI (agent-workflow, o aw) no depende del host: instala los mismos comandos
       en Claude Code, Codex, Gemini CLI, OpenCode y otros.
     `,
     tags: ['TypeScript', 'Node.js', 'CLI', 'Agentes de IA'],

@@ -19,7 +19,7 @@ Ambos llegan de paso, leen poco y deciden rápido si siguen. El idioma del sitio
 
 Sitio personal de Jesús Loayza Tacuchi en `tacuchi.dev`. Existe para tener el perfil listo «por si acaso», sin buscar trabajo ahora, y para que lo encuentren por sus herramientas y proyectos.
 
-Éxito: quien mira el inicio diez segundos se lleva las herramientas que construye (Workline, agent-memory, agent-skills, system-updater) como cosas reales y usables. El nombre va detrás de ellas.
+Éxito: quien mira el inicio diez segundos se lleva las herramientas que construye (agent-workflow, agent-memory, agent-skills, system-updater) como cosas reales y usables. El nombre va detrás de ellas.
 
 ## Positioning
 

@@ -29,10 +29,11 @@ cabecera() {
 
 espera "el inicio responde 200" "$(codigo "$base/")" 200
 espera "Sobre mí responde 200" "$(codigo "$base/about/")" 200
-espera "una ficha de proyecto responde 200" "$(codigo "$base/projects/workline/")" 200
+espera "una ficha de proyecto responde 200" "$(codigo "$base/projects/agent-workflow/")" 200
 
 espera "una ruta que no existe responde 404" "$(codigo "$base/no-existe/")" 404
 espera "un proyecto retirado responde 404" "$(codigo "$base/projects/let-me-know/")" 404
+espera "la dirección con el nombre anterior responde 404" "$(codigo "$base/projects/workline/")" 404
 espera "el 404 no se guarda en caché" "$(cabecera cache-control "$base/no-existe/")" "no-store"
 contiene "el 404 muestra la página de error del sitio" "$(curl -s -m 10 "$base/no-existe/")" "Esta página no existe"
 

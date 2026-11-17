@@ -140,6 +140,35 @@ for (const [route, html] of htmlOf) {
 }
 
 const home = htmlOf.get('/') ?? '';
+// También cubre la página de error, que no forma parte del sitemap.
+for (const file of files.filter((file) => file.endsWith('.html'))) {
+  const html = readFileSync(file, 'utf8');
+  const at = relative(dist, file);
+  const links = tags(html, 'link');
+  for (const [rel, type, href, sizes] of [
+    ['icon', 'image/svg+xml', '/favicon.svg', null],
+    ['icon', 'image/png', '/favicon.png', '32x32'],
+    ['apple-touch-icon', null, '/apple-touch-icon.png', '180x180'],
+  ]) {
+    expect(
+      links.some((tag) => attr(tag, 'rel') === rel && attr(tag, 'href') === href
+        && (!type || attr(tag, 'type') === type) && (!sizes || attr(tag, 'sizes') === sizes)),
+      `${at}: falta el ícono ${href}`,
+    );
+    expect(existsSync(join(dist, href.slice(1))), `${at}: ${href} no existe en dist/`);
+  }
+  const header = (html.match(/<header\b[^>]*>[\s\S]*?<\/header>/) ?? [''])[0];
+  const identity = [...header.matchAll(/<a\b[^>]*href="\/"[^>]*>([\s\S]*?)<\/a>/g)]
+    .map((match) => match[1])
+    .find((content) => decode(content).includes(NAME));
+  expect(Boolean(identity), `${at}: la cabecera debe enlazar el nombre completo a la portada`);
+  expect(
+    Boolean(identity && /<span\b[^>]*class="strip-brand"[^>]*aria-hidden="true"[^>]*>tacuchi<svg\b[\s\S]*?<\/svg><\/span>/.test(identity)),
+    `${at}: falta el logotipo con su pieza cortada, oculto a lectores de pantalla junto al nombre`,
+  );
+  expect(meta(html, 'og:image') === `${ORIGIN}/og.png`, `${at}: la vista previa debe ser /og.png`);
+}
+
 const h1 = decode((home.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/) ?? [])[1] ?? '').replace(/<[^>]+>/g, '');
 expect(h1.includes(NAME), `inicio: el encabezado no muestra «${NAME}»`);
 expect(decode(home.replace(/<head>[\s\S]*?<\/head>/, '')).includes(HEADLINE), 'inicio: el titular único no está visible');

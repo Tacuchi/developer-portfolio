@@ -204,7 +204,7 @@
       top: 0;
     }
     .strip {
-      grid-template-columns: 17rem 1fr auto;
+      grid-template-columns: 21rem 1fr auto;
       padding-block: 1.5rem 1.125rem;
     }
     .strip-headline,

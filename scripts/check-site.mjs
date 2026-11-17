@@ -163,16 +163,12 @@ for (const file of files.filter((file) => file.endsWith('.html'))) {
     .find((content) => decode(content).includes(NAME));
   expect(Boolean(identity), `${at}: la cabecera debe enlazar el nombre completo a la portada`);
   expect(
-    Boolean(identity && /<span\b[^>]*class="strip-brand"[^>]*aria-hidden="true"[^>]*>tacuchi<svg\b[\s\S]*?<\/svg><\/span>/.test(identity)),
-    `${at}: falta el logotipo con su pieza cortada, oculto a lectores de pantalla junto al nombre`,
-  );
-  expect(
     Boolean(identity && /<svg\b[^>]*class="strip-iso"[^>]*aria-hidden="true"/.test(identity)),
     `${at}: falta el isotipo de la cabecera, oculto a lectores de pantalla`,
   );
   expect(
-    Boolean(identity && new RegExp(`<span\\b[^>]*class="sr-only"[^>]*>${NAME}</span>`).test(decode(identity))),
-    `${at}: el nombre completo debe seguir en la cabecera como texto para buscadores y lectores de pantalla`,
+    Boolean(identity && !/sr-only/.test(identity) && new RegExp(`<span\\b[^>]*>${NAME}</span>`).test(decode(identity))),
+    `${at}: el nombre completo debe verse en la cabecera junto al isotipo`,
   );
   expect(meta(html, 'og:image') === `${ORIGIN}/og.png`, `${at}: la vista previa debe ser /og.png`);
 }

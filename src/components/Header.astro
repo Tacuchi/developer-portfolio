@@ -19,9 +19,10 @@ const Name = isHome ? 'h1' : 'p';
 <header class="site-header" data-header>
   <div class="page strip">
     <Name class="strip-name">
-      <a href="/" class="inline-flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <a href="/" class="inline-flex items-center gap-2">
+        <svg class="strip-iso" width="24" height="24" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="12" fill="#111111" /><path d="M16 14H52L47 24H37V51H27V38C27 27 21 24 11 24Z" fill="#e6e6e2" /><path d="M41 51H50L55 41H46Z" fill="#b6f23c" /></svg>
         <span class="strip-brand" aria-hidden="true">tacuchi<svg width="7" height="3" viewBox="0 0 14 6" focusable="false"><path d="M0 6H11L14 0H3Z" fill="#b6f23c" /></svg></span>
-        <span>{site.name}</span>
+        <span class="sr-only">{site.name}</span>
       </a>
     </Name>
     <p class="strip-headline" data-home={String(isHome)}>{site.headline}</p>

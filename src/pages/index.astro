@@ -6,11 +6,11 @@ import Figure from '../components/Figure.astro';
 import { featuredProjects } from '../data/projects';
 
 const skills = {
-  Mobile: ['Flutter', 'Dart', 'Kotlin', 'Android', 'Jetpack Compose'],
+  Móvil: ['Flutter', 'Dart', 'Kotlin', 'Android', 'Jetpack Compose'],
   Frontend: ['Angular', 'TypeScript', 'Astro', 'Tailwind CSS'],
   Backend: ['Spring Boot', 'Java', 'PostgreSQL', 'Firebase'],
   'Agentes de IA': ['TypeScript', 'Node.js', 'Python', 'MCP', 'SQLite'],
-  Tools: ['Git', 'Docker', 'Kubernetes', 'Coolify', 'Cloudflare'],
+  Herramientas: ['Git', 'Docker', 'Kubernetes', 'Coolify', 'Cloudflare'],
 };
 
 const plateNumber = (index: number) => String(index + 1).padStart(2, '0');
@@ -46,7 +46,7 @@ const longestWord = (title: string) => Math.max(...title.split(/\s+/).map((word)
           <li data-hue style={`--i:${index}`}>
             <a href={`#${project.slug}`} data-plate-link={project.slug}>
               <span>{plateNumber(index)}</span>
-              <strong>{project.title}</strong>
+              <strong class="max-md:sr-only">{project.title}</strong>
             </a>
           </li>
         ))}
@@ -66,7 +66,7 @@ const longestWord = (title: string) => Math.max(...title.split(/\s+/).map((word)
     </dl>
 
     <p class="act-row">
-      <a class="act" href="/projects">Ver todos <Arrow /></a>
+      <a class="act" href="/projects">Ver todos los proyectos <Arrow /></a>
     </p>
   </section>
 </BaseLayout>

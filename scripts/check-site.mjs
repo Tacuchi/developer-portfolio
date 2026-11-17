@@ -163,7 +163,7 @@ for (const file of files.filter((file) => file.endsWith('.html'))) {
     .find((content) => decode(content).includes(NAME));
   expect(Boolean(identity), `${at}: la cabecera debe enlazar el nombre completo a la portada`);
   expect(
-    Boolean(identity && /<svg\b[^>]*class="strip-iso"[^>]*aria-hidden="true"/.test(identity)),
+    Boolean(identity && /<svg\b[^>]*class="strip-iso(?: [^"]*)?"[^>]*aria-hidden="true"/.test(identity)),
     `${at}: falta el isotipo de la cabecera, oculto a lectores de pantalla`,
   );
   expect(
@@ -261,6 +261,56 @@ expect(
 for (const word of [/\bl[ií]der/i, /\bjef[ea]s?\b/i]) {
   expect(!word.test(aboutText), `sobre mí: no debe presentar jefatura (${word})`);
 }
+
+// --- Accesibilidad y textos de la portada y Sobre mí ---
+// Solo inspecciona las reglas compiladas; las geometrías se verifican en Chrome.
+const cssRules = (css, parents = []) => {
+  const rules = [];
+  let cursor = 0;
+  while (cursor < css.length) {
+    const open = css.indexOf('{', cursor);
+    if (open < 0) break;
+    let end = open + 1;
+    let depth = 1;
+    while (end < css.length && depth) {
+      if (css[end] === '{') depth += 1;
+      if (css[end] === '}') depth -= 1;
+      end += 1;
+    }
+    const selector = css.slice(cursor, open).trim();
+    const body = css.slice(open + 1, end - 1);
+    if (selector.startsWith('@')) rules.push(...cssRules(body, [...parents, selector]));
+    else rules.push({ selector, body, parents });
+    cursor = end;
+  }
+  return rules;
+};
+const styles = files.filter((file) => file.endsWith('.css')).flatMap((file) => cssRules(readFileSync(file, 'utf8')));
+const flowAnimations = styles.filter(({ selector, body }) => selector.includes('[data-flowing]') && /animation[\w-]*:/.test(body));
+expect(flowAnimations.length > 0 && flowAnimations.every(({ body }) => !/\binfinite\b/.test(body)),
+  'figura: sus animaciones deben ser finitas');
+const buttonMotion = styles.filter(({ selector, body }) => /\.act(?::hover|:active)?$/.test(selector) && /(?:transform|translate|scale)\s*[: ]/.test(body));
+expect(buttonMotion.some(({ selector }) => selector === '.act:hover') && buttonMotion.every(({ parents }) =>
+  parents.some((parent) => /hover:\s*hover/.test(parent) && /prefers-reduced-motion:\s*no-preference/.test(parent))),
+  'botones: el movimiento requiere cursor y movimiento no reducido');
+expect(styles.some(({ selector, body }) => selector === '.ficha' && /--color-focus:\s*var\(--color-act\)/.test(body)),
+  'ficha: el foco debe usar el acento sobre la placa');
+expect(styles.some(({ selector, body }) => selector === 'html' && /scroll-padding-block:\s*[^;]+/.test(body)),
+  'foco: falta espacio de desplazamiento para los elementos fijos');
+const projectIndex = (home.match(/<nav\b[^>]*class="plate-index"[^>]*>([\s\S]*?)<\/nav>/) ?? [])[1] ?? '';
+const indexNames = [...projectIndex.matchAll(/<strong\b([^>]*)>([^<]+)<\/strong>/g)];
+expect(indexNames.length === FEATURED.length && indexNames.every(([, attributes, name]) =>
+  attributes.includes('max-md:sr-only') && text(name).length > 0)
+  && !styles.some(({ selector, body }) => selector.includes('.plate-index strong') && /display:\s*none/.test(body)),
+  'índice: cada nombre de proyecto debe seguir disponible al lector en móvil');
+const visibleCopy = [home, about].map((html) => text(html.replace(/<head>[\s\S]*?<\/head>|<script\b[^>]*>[\s\S]*?<\/script>/g, ''))).join(' ');
+expect(['Móvil', 'Herramientas', 'Correo'].every((label) => visibleCopy.includes(label)) && !/\b(Mobile|Tools|Email)\b/.test(visibleCopy),
+  'rótulos: usar Móvil, Herramientas y Correo en español');
+expect([...home.matchAll(/<a\b[^>]*href="\/projects"[^>]*>([\s\S]*?)<\/a>/g)].some(([, label]) => text(label) === 'Ver todos los proyectos'),
+  'proyectos: el enlace debe decir «Ver todos los proyectos»');
+const headingLevels = [...about.matchAll(/<h([1-6])\b/g)].map(([, level]) => Number(level));
+expect(headingLevels.length > 0 && headingLevels.every((level, index) => index === 0 || level <= headingLevels[index - 1] + 1),
+  'sobre mí: los encabezados no deben saltar niveles');
 
 // --- Un solo dominio: sitemap, robots y redirección ---
 const xml = (name) => (existsSync(join(dist, name)) ? readFileSync(join(dist, name), 'utf8') : '');

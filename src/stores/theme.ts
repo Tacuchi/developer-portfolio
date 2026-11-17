@@ -15,7 +15,17 @@ export function applyTheme(theme: Theme) {
     theme === 'dark' ||
     (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
+  if (root.classList.contains('dark') === isDark) return;
+
+  const style = document.createElement('style');
+  style.textContent = '*,*::before,*::after{transition:none !important}';
+  document.head.append(style);
   root.classList.toggle('dark', isDark);
+  // Fija los colores nuevos antes de devolver las transiciones.
+  void document.body.offsetHeight;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => style.remove());
+  });
 }
 
 export function initTheme() {

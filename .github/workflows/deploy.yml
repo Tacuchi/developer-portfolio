@@ -1,4 +1,4 @@
-# Cualquier push → build, check del sitio y prueba del servidor de la imagen.
+# Cualquier push que no sea solo de documentación → build, check del sitio y prueba del servidor de la imagen.
 # Solo en main → imagen linux/amd64 con tag inmutable (git SHA) en GHCR →
 # redeploy en Coolify → verificación del sitio publicado.
 # Mismo patrón que family-rag. Registry: GHCR (privado).
@@ -7,6 +7,11 @@ name: deploy
 
 on:
   push:
+    # Un cambio solo de documentación no corre el flujo ni redespliega.
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - "ARCHITECTURE.md"
   workflow_dispatch:
 
 env:

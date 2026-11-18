@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Contexto: developer-portfolio",
+    "locale": "es",
+    "output": "docs/architecture/context.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tacuchi/developer-portfolio.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "a67fe67027767971bf970ca81c2bbe3a69bc3b33"
+    }
+  },
+  "components": [
+    {
+      "id": "visitante",
+      "type": "external",
+      "label": "Visitante",
+      "sublabel": "Navegador",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        130,
+        72
+      ],
+      "sources": [
+        {
+          "path": "src/components/Header.astro",
+          "line": 4,
+          "end_line": 8
+        }
+      ]
+    },
+    {
+      "id": "sitio",
+      "type": "frontend",
+      "label": "developer-portfolio",
+      "sublabel": "Sitio público · Astro",
+      "pos": [
+        350,
+        40
+      ],
+      "size": [
+        220,
+        100
+      ],
+      "sources": [
+        {
+          "path": "package.json",
+          "line": 2,
+          "end_line": 10
+        },
+        {
+          "path": "src/pages/about.astro",
+          "line": 75,
+          "end_line": 81
+        },
+        {
+          "path": "src/components/Ficha.astro",
+          "line": 29,
+          "end_line": 36
+        }
+      ]
+    },
+    {
+      "id": "perfiles",
+      "type": "external",
+      "label": "Destinos externos",
+      "sublabel": "Perfiles, proyectos y correo",
+      "pos": [
+        760,
+        40
+      ],
+      "size": [
+        190,
+        72
+      ],
+      "sources": [
+        {
+          "path": "src/components/Footer.astro",
+          "line": 7,
+          "end_line": 19
+        },
+        {
+          "path": "src/components/Ficha.astro",
+          "line": 29,
+          "end_line": 36
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API",
+      "sublabel": "Destino declarado de /cv",
+      "pos": [
+        350,
+        310
+      ],
+      "size": [
+        220,
+        72
+      ],
+      "sources": [
+        {
+          "path": "src/data/site.ts",
+          "line": 10,
+          "end_line": 11
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "leer",
+      "from": "visitante",
+      "to": "sitio",
+      "label": "Leer páginas",
+      "variant": "emphasis"
+    },
+    {
+      "id": "externo",
+      "from": "sitio",
+      "to": "perfiles",
+      "label": "Clic externo"
+    },
+    {
+      "id": "curriculum",
+      "from": "sitio",
+      "to": "api",
+      "label": "Clic /cv"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Sitio estático",
+      "items": [
+        "Los proyectos y la trayectoria se convierten en páginas durante la construcción.",
+        "La preferencia de tema queda en el navegador."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Límite del contrato de CV",
+      "items": [
+        "El sitio solo enlaza /cv. La api sirve ese destino mediante el enrutador.",
+        "Este repositorio no demuestra las rutas del enrutador ni el contenido que devuelve la api."
+      ]
+    }
+  ]
+}

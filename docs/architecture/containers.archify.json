@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Contenedores: developer-portfolio",
+    "locale": "es",
+    "output": "docs/architecture/containers.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Tacuchi/developer-portfolio.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "a67fe67027767971bf970ca81c2bbe3a69bc3b33"
+    },
+    "legend": {
+      "entries": {
+        "database": {
+          "label": "Almacenamiento"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "fuentes",
+      "type": "database",
+      "label": "Fuentes del sitio",
+      "sublabel": "TypeScript y recursos",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        180,
+        72
+      ],
+      "sources": [
+        {
+          "path": "src/data/projects.ts",
+          "line": 6,
+          "end_line": 15
+        },
+        {
+          "path": "src/data/site.ts",
+          "line": 3,
+          "end_line": 17
+        },
+        {
+          "path": "src/pages/about.astro",
+          "line": 49,
+          "end_line": 66
+        }
+      ]
+    },
+    {
+      "id": "astro",
+      "type": "backend",
+      "label": "Astro",
+      "sublabel": "Construcción con Node 22",
+      "pos": [
+        400,
+        60
+      ],
+      "size": [
+        180,
+        72
+      ],
+      "sources": [
+        {
+          "path": "Dockerfile",
+          "line": 1,
+          "end_line": 6
+        },
+        {
+          "path": "astro.config.mjs",
+          "line": 7,
+          "end_line": 13
+        }
+      ]
+    },
+    {
+      "id": "nginx",
+      "type": "backend",
+      "label": "Nginx",
+      "sublabel": "HTTP · archivos estáticos",
+      "pos": [
+        760,
+        60
+      ],
+      "size": [
+        180,
+        72
+      ],
+      "sources": [
+        {
+          "path": "Dockerfile",
+          "line": 8,
+          "end_line": 12
+        },
+        {
+          "path": "nginx.conf",
+          "line": 1,
+          "end_line": 18
+        }
+      ]
+    },
+    {
+      "id": "navegador",
+      "type": "frontend",
+      "label": "Páginas y tema",
+      "sublabel": "Astro + isla Preact",
+      "pos": [
+        760,
+        330
+      ],
+      "size": [
+        180,
+        72
+      ],
+      "sources": [
+        {
+          "path": "src/layouts/BaseLayout.astro",
+          "line": 65,
+          "end_line": 83
+        },
+        {
+          "path": "src/components/Footer.astro",
+          "line": 23,
+          "end_line": 23
+        },
+        {
+          "path": "src/components/ThemeToggle.tsx",
+          "line": 10,
+          "end_line": 19
+        }
+      ]
+    },
+    {
+      "id": "tema",
+      "type": "database",
+      "label": "localStorage",
+      "sublabel": "Clave theme",
+      "pos": [
+        1120,
+        330
+      ],
+      "size": [
+        160,
+        72
+      ],
+      "sources": [
+        {
+          "path": "src/stores/theme.ts",
+          "line": 1,
+          "end_line": 16
+        },
+        {
+          "path": "src/layouts/BaseLayout.astro",
+          "line": 65,
+          "end_line": 70
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API",
+      "sublabel": "Destino declarado de /cv",
+      "pos": [
+        760,
+        580
+      ],
+      "size": [
+        180,
+        72
+      ],
+      "sources": [
+        {
+          "path": "src/data/site.ts",
+          "line": 10,
+          "end_line": 11
+        },
+        {
+          "path": "src/pages/about.astro",
+          "line": 75,
+          "end_line": 81
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "generar",
+      "from": "fuentes",
+      "to": "astro",
+      "label": "npm run build"
+    },
+    {
+      "id": "empaquetar",
+      "from": "astro",
+      "to": "nginx",
+      "label": "Copiar dist/"
+    },
+    {
+      "id": "servir",
+      "from": "nginx",
+      "to": "navegador",
+      "label": "HTTP · lectura",
+      "variant": "emphasis"
+    },
+    {
+      "id": "guardar",
+      "from": "navegador",
+      "to": "tema",
+      "label": "Elegir tema"
+    },
+    {
+      "id": "abrir-cv",
+      "from": "navegador",
+      "to": "api",
+      "label": "Clic /cv"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Dos etapas de imagen",
+      "items": [
+        "Node construye el sitio. La imagen final ejecuta Nginx y no incluye un servidor Node.",
+        "El orquestador recibe la solicitud de despliegue desde GitHub Actions; la configuración del enrutador queda fuera de este repo."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Límites de confianza",
+      "items": [
+        "Nginx entrega páginas públicas sin autenticación. No hay acceso a la base de datos desde el sitio.",
+        "El CV depende del enrutador: el contenedor del sitio no implementa /cv."
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Construcción",
+      "wraps": [
+        "fuentes",
+        "astro"
+      ],
+      "pad": 20
+    },
+    {
+      "kind": "region",
+      "label": "Contenedor servido",
+      "wraps": [
+        "nginx"
+      ],
+      "pad": 20
+    },
+    {
+      "kind": "region",
+      "label": "Navegador del visitante",
+      "wraps": [
+        "navegador",
+        "tema"
+      ],
+      "pad": 20
+    }
+  ]
+}

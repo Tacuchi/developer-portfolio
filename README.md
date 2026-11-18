@@ -86,7 +86,7 @@ El cuadro completo está en [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Contribuir
 
-Es un proyecto personal y privado: no se aceptan contribuciones externas. Para trabajar
+Es un proyecto personal: no se aceptan contribuciones externas. Para trabajar
 en el código, ver [docs/desarrollo.md](docs/desarrollo.md).
 
 ## Licencia

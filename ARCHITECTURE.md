@@ -1,6 +1,6 @@
 # Arquitectura de developer-portfolio
 
-Revisado el 2026-11-18 contra la versión 0.0.1 (commit `a67fe67`).
+Revisado el 2026-11-18 contra la versión 0.0.1 (commit `5afb0a3`).
 
 Este documento da la vista general: qué partes existen, cómo se hablan y qué reglas no se rompen.
 Describe el sitio público, su generación estática y su receta de publicación.
@@ -33,7 +33,7 @@ Qué no es:
 
 ![Diagrama de contexto de developer-portfolio](docs/architecture/context.svg)
 
-[Versión interactiva](docs/architecture/context.html): descarga el archivo y ábrelo en un navegador.
+[Versión interactiva](https://tacuchi.github.io/developer-portfolio/architecture/context.html).
 
 | Interfaz externa | Dirección | Cuándo ocurre |
 |---|---|---|
@@ -55,7 +55,7 @@ No se observa una conexión con el panel, el lector local ni la base de datos.
 
 ![Diagrama de contenedores de developer-portfolio](docs/architecture/containers.svg)
 
-[Versión interactiva](docs/architecture/containers.html): descarga el archivo y ábrelo en un navegador.
+[Versión interactiva](https://tacuchi.github.io/developer-portfolio/architecture/containers.html).
 
 | Bloque | Responsabilidad | Código |
 |---|---|---|
@@ -174,7 +174,7 @@ No registrado aún:
 
 ## Anexo: evidencia
 
-Los números de línea refieren al commit `a67fe67`. El texto de arriba no enlaza al código a propósito.
+Los números de línea refieren al commit `5afb0a3`. El texto de arriba no enlaza al código a propósito.
 
 | Sección | Evidencia |
 |---|---|

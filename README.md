@@ -91,4 +91,4 @@ en el código, ver [docs/desarrollo.md](docs/desarrollo.md).
 
 ## Licencia
 
-No hay archivo de licencia ni campo `license` en el manifiesto del paquete.
+[MIT](LICENSE).

@@ -227,7 +227,7 @@ expect(
   memoryLinks.includes('https://www.npmjs.com/package/@tacuchi/agent-memory'),
   'proyectos: agent-memory debe enlazar a su paquete de npm',
 );
-expect(!memoryLinks.some(isRepo), 'proyectos: agent-memory no debe enlazar a un repo');
+expect(memoryLinks.some(isRepo), 'proyectos: agent-memory debe enlazar a su repo');
 
 // --- Trayectoria: todos los puestos, consultora primero y sin jefatura ---
 const text = (html) => decode(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();

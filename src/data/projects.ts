@@ -64,7 +64,7 @@ export const projects: Project[] = [
       Todo corre en la máquina. El único paso de red es descargar una vez el modelo de embeddings.
     `,
     tags: ['TypeScript', 'SQLite', 'MCP', 'Embeddings'],
-    links: [npm('@tacuchi/agent-memory')],
+    links: [github('agent-memory'), npm('@tacuchi/agent-memory')],
     features: [
       'Búsqueda híbrida: por texto y por significado',
       'Servidor MCP y servicio local con token',
@@ -90,7 +90,7 @@ export const projects: Project[] = [
     tags: ['Agent Skills', 'Markdown', 'JavaScript'],
     links: [github('agent-skills')],
     features: [
-      '18 skills propias en 10 dominios',
+      '20 skills propias en 10 dominios',
       'Cada skill con versión, notas de release y licencia',
       'Catálogo generado y verificado por script',
       'Estándares de código, revisión, pruebas y seguridad',
@@ -218,7 +218,7 @@ export const projects: Project[] = [
       comprueba el HTML generado antes de publicar.
     `,
     tags: ['Astro', 'Preact', 'Tailwind CSS', 'Nanostores', 'TypeScript'],
-    links: [],
+    links: [github('developer-portfolio')],
     features: [
       'Generación estática con Astro',
       'Perfil, proyectos y trayectoria definidos una sola vez',

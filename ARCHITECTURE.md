@@ -8,6 +8,14 @@ No describe la implementación de la api ni las rutas del enrutador.
 Todos los valores son los de por defecto; nada aquí se midió en una máquina concreta.
 Los dominios y destinos propios se representan con marcadores.
 
+En resumen:
+
+- Presenta proyectos, trayectoria, contacto y un enlace al CV.
+- Lo recorren visitantes y buscadores, sin autenticación en el sitio.
+- El navegador abre perfiles y la api; el flujo publica en GHCR y llama al orquestador.
+- Los datos viven en TypeScript; el tema queda en el navegador.
+- Nginx entrega archivos estáticos y nunca guarda errores 404 en caché.
+
 ## 1. Propósito y metas de calidad
 
 El sitio público presenta proyectos, trayectoria y contacto mediante un catálogo de fichas técnicas.
@@ -19,14 +27,13 @@ Qué no es:
 - No es el panel: no tiene una pantalla para subir o administrar versiones del CV.
 - No es la api: no genera ni guarda el documento enlazado en `/cv`.
 - No ejecuta un servidor Node en la imagen final: ejecuta Nginx.
-- No consulta la base de datos: el contenido del sitio procede de archivos del repositorio.
+
+El alcance y las metas complementarias están en [la guía de configuración](docs/configuracion.md#metas-y-alcance).
 
 | Meta | Escenario |
 |---|---|
 | Contenido consistente | La lista y las fichas usan el mismo arreglo de proyectos; una comprobación revisa el HTML generado. |
-| Identidad encontrable | La plantilla declara canónica, vista previa y datos estructurados; se genera un sitemap. |
 | Errores recuperables | Una ruta inexistente responde 404 con `no-store`, sin dejar una hoja de estilos ausente en caché. |
-| Tema persistente | El visitante elige claro, oscuro o sistema; la elección queda en su navegador. |
 | Publicación comprobable | El flujo comprueba el sitio y el servidor de la imagen antes de publicar; verifica HTTP después del despliegue. |
 
 ## 2. Contexto y alcance
@@ -40,7 +47,7 @@ Qué no es:
 | Visitante y buscadores | Entrante al servidor web | Al solicitar páginas, imágenes, estilos, fuentes o sitemap. |
 | Perfiles y proyectos externos | Saliente desde el navegador | Al pulsar un enlace; no se consultan mediante un cliente HTTP de la aplicación. |
 | Aplicación de correo | Saliente, enlace `mailto:` | Al pulsar el enlace de contacto. |
-| La api, mediante `/cv` | Saliente desde el navegador | Al pulsar «Descargar CV». El código declara el destino y el enrutador. |
+| La api, mediante `/cv` | Saliente desde el navegador | Al pulsar «Descargar CV», cuyo destino y enrutador declara el código. |
 | GitHub Container Registry | Saliente desde GitHub Actions | Al publicar la imagen desde `main`, después de las comprobaciones. |
 | El orquestador | Saliente desde GitHub Actions | Con los dos secretos configurados: cambia la etiqueta de imagen y solicita el despliegue. |
 | El sitio público y su dominio antiguo | Saliente desde GitHub Actions | Después de solicitar el despliegue: comprueba respuesta 200 y redirección. |
@@ -59,16 +66,15 @@ No se observa una conexión con el panel, el lector local ni la base de datos.
 
 | Bloque | Responsabilidad | Código |
 |---|---|---|
-| Datos de identidad | Define titular, contacto, perfiles, imagen y enlace al CV. | `src/data/site.ts` |
-| Catálogo y trayectoria | Define proyectos, sus fichas y la experiencia profesional. | `src/data/projects.ts`, `src/data/experience.ts` |
+| Datos del sitio | Define identidad, contacto, perfiles, CV, proyectos y trayectoria. | `src/data/` |
 | Páginas estáticas | Compone inicio, catálogo, fichas, trayectoria y error 404. | `src/pages/` |
 | Plantilla común | Comparte cabecera, pie, metadatos y arranque del tema. | `src/layouts/BaseLayout.astro` |
 | Componentes visuales | Presenta fichas, esquemas, navegación y enlaces. | `src/components/` |
 | Tema | Guarda la preferencia y aplica el modo claro, oscuro o del sistema. | `src/stores/theme.ts`, `src/components/ThemeToggle.tsx` |
-| Estilos y fuente | Compila Tailwind y carga Archivo desde el propio sitio. | `src/styles/global.css`, `public/fonts/` |
-| Construcción | Integra Preact, sitemap y Tailwind con Astro. | `astro.config.mjs`, `package.json` |
 | Servidor final | Sirve el contenido estático y aplica error, caché y redirección. | `Dockerfile`, `nginx.conf` |
 | Comprobaciones y publicación | Revisa HTML, prueba la imagen y pide el despliegue. | `scripts/check-site.mjs`, `scripts/smoke-server.sh`, `.github/workflows/deploy.yml` |
+
+Los archivos de datos, estilos, fuentes e integraciones se detallan en [bloques y archivos](docs/configuracion.md#bloques-y-archivos).
 
 Reglas que no se rompen:
 
@@ -93,34 +99,21 @@ Construir y leer el sitio:
 6. Al hacerse visible el selector, Preact permite cambiar el tema y persistir la elección.
 7. Un clic en «Descargar CV» abre `/cv`; la entrega necesita el enrutador declarado.
 
-Publicar desde el flujo automatizado:
-
-1. Un push que supera el filtro de rutas, o una ejecución manual, inicia el flujo.
-2. El trabajo `test` instala, construye y comprueba el HTML generado.
-3. Construye y arranca una imagen temporal; el script comprueba códigos HTTP, caché y redirección.
-4. Solo en `main`, el siguiente trabajo publica una imagen `linux/amd64` con etiquetas SHA y `latest`.
-5. Si existen ambos secretos, cambia la imagen del orquestador a la etiqueta SHA y solicita el despliegue.
-6. Comprueba hasta 30 veces el inicio y la redirección del dominio antiguo; espera 10 segundos entre intentos fallidos.
-7. Si ninguna comprobación cumple ambas condiciones, el trabajo termina con error.
+El segundo recorrido es la [publicación automatizada](docs/configuracion.md#publicación-automatizada): comprueba HTML y servidor, publica la imagen y verifica HTTP tras desplegar.
 
 ## 5. Vista de despliegue
 
 | Qué | Por defecto | Cuándo aplica | Cómo cambiarlo |
 |---|---|---|---|
 | Construcción | `npm run build`, salida `dist/` | Al generar el sitio | Script `build` y configuración de Astro. |
-| Runtime de construcción | `node:22-alpine`; Node 22 en CI | Imagen de construcción y comprobaciones | `Dockerfile` y paso `setup-node`. No se declara `engines` en el paquete. |
-| Runtime final | `nginx:alpine` | Imagen publicada | Etapa final del `Dockerfile`; las bases no están fijadas por digest. |
-| Puerto del servidor final | HTTP 80 | Dentro del contenedor | `listen` en Nginx y `EXPOSE` en la imagen; el mapeo exterior pertenece al despliegue. |
-| Raíz de archivos | `/usr/share/nginx/html` | Dentro del contenedor | `root` de Nginx y destino del `COPY`. |
-| Dominio canónico | Fijado en código; aquí `https://<tu-dominio>` | Canónicas, vista previa, sitemap y comprobaciones | Coordinar Astro, robots, Nginx, scripts de comprobación y workflow. No hay variable de entorno para ello. |
-| Dominio antiguo | Fijado en código; aquí `<dominio-anterior>` | Solicitudes con ese host | Bloque de redirección Nginx y comprobaciones; responde 301 y conserva la ruta. |
-| Estilos generados y fuentes | `/_astro/` y `/fonts/`: un año, `immutable` | Respuestas de esos recursos | Bloques `location` de Nginx. |
-| Imágenes sin huella | Un día | Extensiones de imagen configuradas | Bloque por extensiones de Nginx. |
-| Errores | `/404.html`, interno, `no-store` | Ruta o recurso inexistente | `error_page` y bloque exacto de Nginx. |
+| Construcción y servidor | Node 22 y Nginx | Imagen de contenedor | Etapas del `Dockerfile` y configuración de CI. |
+| Dominios y caché | Destinos y políticas fijados en código | Respuestas del sitio | Configuración coordinada en [valores de despliegue](docs/configuracion.md#valores-de-despliegue). |
 | Tema | Clave `theme`, valor `system` | Navegador sin preferencia guardada | Selector; valor inicial en store y plantilla. |
-| Imagen publicada | `ghcr.io/<owner>/developer-portfolio`, etiquetas SHA y `latest` | Trabajo de publicación en `main` | `IMAGE` y etiquetas del workflow. El despliegue usa SHA. |
-| Orquestador | Dirección fijada en el workflow; aquí `https://<tu-orquestador>` | Solo con ambos secretos | `COOLIFY_URL`, secretos `COOLIFY_TOKEN` y `COOLIFY_APP_UUID`. |
+| Imagen publicada | Etiquetas SHA y `latest` | Publicación en `main` | `IMAGE` y etiquetas del workflow. |
+| Orquestador | Despliegue con ambos secretos | Después de publicar | Variables descritas en [publicación de la imagen](docs/configuracion.md#publicación-de-la-imagen). |
 | Serialización | Una ejecución por referencia; no cancela las anteriores | Flujo automatizado | `concurrency` del workflow. |
+
+Los puertos, rutas, cachés y destinos completos están en [valores de despliegue](docs/configuracion.md#valores-de-despliegue).
 
 Requisitos: Node y npm para construir; la receta y CI usan Node 22.
 El repositorio no fija una versión mínima mediante `engines` ni una matriz de sistemas operativos.
@@ -137,12 +130,14 @@ Datos y privacidad:
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Qué sale de la máquina y adónde va? | El servidor entrega páginas y recursos públicos. El navegador solicita esos archivos y, por clic, abre destinos externos o `/cv`. El CI publica la imagen en GHCR y llama al orquestador. |
-| ¿Qué nunca sale de ella? | El código no envía la preferencia `theme` a un servidor. No implementa cargas de CV, formularios ni telemetría del visitante. |
-| ¿Cuándo ocurre? | Al cargar páginas, seguir enlaces o ejecutar el flujo. Elegir tema solo actualiza el estado y almacenamiento del navegador. |
-| ¿Dónde se guarda y por cuánto tiempo? | El contenido fuente queda en el repositorio y el generado en `dist/` e imagen. `theme` no tiene caducidad programada. No se configuran aquí retenciones de registros, imágenes del registry ni del CV. |
-| ¿Cómo ver exactamente lo enviado? | La pestaña Red del navegador muestra las solicitudes; Almacenamiento muestra `theme`. El código de envío del CI está en el workflow. No hay un visor propio de tráfico. |
-| ¿Cómo se apaga? | No abrir los enlaces evita esas navegaciones. Borrar `theme` restablece el modo sistema; no hay interruptor de persistencia. El flujo omite despliegue sin ambos secretos, pero en `main` sigue publicando la imagen. |
+| ¿Qué sale de la máquina y adónde va? | El servidor entrega recursos públicos; el navegador abre enlaces y `/cv`; CI publica en GHCR y llama al orquestador. |
+| ¿Qué nunca sale de ella? | La preferencia `theme` permanece en el navegador, sin cargas de CV, formularios ni telemetría del visitante. |
+| ¿Cuándo ocurre? | Al cargar páginas, seguir enlaces o ejecutar el flujo, mientras elegir tema solo actualiza el navegador. |
+| ¿Dónde se guarda y por cuánto tiempo? | Las fuentes quedan en el repositorio, el sitio generado en `dist/` e imagen y `theme` sin caducidad programada. |
+| ¿Cómo ver exactamente lo enviado? | Red muestra solicitudes y Almacenamiento muestra `theme`, sin un visor propio de tráfico. |
+| ¿Cómo se apaga? | Evitar enlaces impide navegaciones, borrar `theme` restablece sistema y retirar secretos omite el despliegue, conservando la publicación en `main`. |
+
+El detalle de retenciones, envío del CI y persistencia está en [datos, seguridad y persistencia](docs/configuracion.md#datos-seguridad-y-persistencia).
 
 Seguridad:
 
@@ -161,6 +156,8 @@ Persistencia:
 
 ## 7. Decisiones
 
+Los tres registros están en [la carpeta de decisiones](docs/decisions/).
+
 | Decisión | Registro |
 |---|---|
 | No guardar respuestas 404 en caché durante cambios de versión | [0001](docs/decisions/0001-no-guardar-404-en-cache.md) |
@@ -178,16 +175,14 @@ Los números de línea refieren al commit `5afb0a3`. El texto de arriba no enlaz
 
 | Sección | Evidencia |
 |---|---|
-| 1. Propósito | `src/data/projects.ts:214-227`, `src/pages/index.astro:20-40`, `src/pages/about.astro:49-83`, `Dockerfile:1-12` |
-| 1. Qué no es | `src/data/site.ts:10-11`, `Dockerfile:8-12`, `src/pages/projects/[slug].astro:6-13`. La búsqueda de clientes HTTP, formularios y acceso a bases de datos en el código no muestra esos mecanismos. |
-| 1. Metas | `src/pages/projects/index.astro:16-29`, `src/layouts/BaseLayout.astro:16-28`, `src/layouts/BaseLayout.astro:43-63`, `astro.config.mjs:9-11`, `nginx.conf:14-18`, `src/stores/theme.ts:3-16`, `.github/workflows/deploy.yml:37-50` |
-| 2. Contexto | `src/components/Footer.astro:7-19`, `src/components/Ficha.astro:29-36`, `src/pages/about.astro:75-81`, `src/data/site.ts:10-11`, `nginx.conf:10-12`, `.github/workflows/deploy.yml:73-97`, `.github/workflows/deploy.yml:99-111` |
-| 3. Bloques | `src/data/site.ts:3-17`, `src/data/projects.ts:6-15`, `src/pages/about.astro:49-66`, `src/layouts/BaseLayout.astro:2-5`, `src/stores/theme.ts:1-16`, `src/components/ThemeToggle.tsx:10-19`, `src/styles/global.css:1-9`, `astro.config.mjs:2-12`, `scripts/check-site.mjs:7-13`, `scripts/smoke-server.sh:30-55` |
-| 3. Reglas | `src/pages/projects/[slug].astro:8-13`, `src/data/projects.ts:232-233`, `src/data/site.ts:10-11`, `scripts/check-site.mjs:324-328`, `src/components/Footer.astro:23`, `src/layouts/BaseLayout.astro:65-71`, `src/pages/404.astro:5`, `nginx.conf:7-18`, `.github/workflows/deploy.yml:8-15`, `.github/workflows/deploy.yml:52-61` |
-| 4. Lectura y tema | `package.json:5-10`, `src/pages/projects/[slug].astro:8-13`, `astro.config.mjs:7-12`, `Dockerfile:6-12`, `src/layouts/BaseLayout.astro:65-83`, `src/components/Footer.astro:23`, `src/components/ThemeToggle.tsx:10-19`, `src/stores/theme.ts:5-16`, `src/pages/about.astro:75-81` |
-| 4. Publicación | `.github/workflows/deploy.yml:8-15`, `.github/workflows/deploy.yml:27-50`, `.github/workflows/deploy.yml:52-61`, `.github/workflows/deploy.yml:73-97`, `.github/workflows/deploy.yml:99-111` |
-| 5. Despliegue | `Dockerfile:1-12`, `package.json:5-10`, `astro.config.mjs:7-12`, `nginx.conf:1-5`, `nginx.conf:7-34`, `nginx.conf:40-45`, `public/robots.txt:1-4`, `scripts/check-site.mjs:10-13`, `scripts/smoke-server.sh:53-55`, `.github/workflows/deploy.yml:17-24`, `.github/workflows/deploy.yml:33-35`, `.github/workflows/deploy.yml:59-61`, `.github/workflows/deploy.yml:73-97`, `src/layouts/BaseLayout.astro:65-70`, `src/stores/theme.ts:3-5` |
-| 6. Privacidad | `src/layouts/BaseLayout.astro:65-71`, `src/stores/theme.ts:1-16`, `src/components/Ficha.astro:29-36`, `src/pages/about.astro:75-81`, `.github/workflows/deploy.yml:73-97`. La búsqueda de `fetch`, `axios`, `XMLHttpRequest`, `WebSocket`, cookies y formularios en `src/` no encontró implementaciones; no se deduce la retención de proveedores externos. |
-| 6. Seguridad y persistencia | `nginx.conf:1-12`, `src/components/Footer.astro:7-19`, `src/components/Ficha.astro:29-36`, `src/pages/about.astro:75-81`, `.github/workflows/deploy.yml:27-30`, `.github/workflows/deploy.yml:52-61`, `.github/workflows/deploy.yml:84-97`, `src/data/projects.ts:27-28`, `src/pages/about.astro:3-4`, `src/stores/theme.ts:1-9` |
-| 7. Decisiones | `nginx.conf:14-18`, `.github/workflows/deploy.yml:99-111`, `src/data/site.ts:10-11`, `src/pages/about.astro:75-81`, `Dockerfile:8-12`, `nginx.conf:10-12`, `scripts/check-site.mjs:324-328` |
-| README y desarrollo | `package.json:1-24`, `Dockerfile:1-12`, `src/components/Header.astro:4-8`, `src/data/projects.ts:214-227`, `scripts/check-site.mjs:1-13`, `scripts/check-site.mjs:46-49`, `scripts/check-site.mjs:95-113`, `scripts/check-site.mjs:315-353`, `scripts/smoke-server.sh:1-6`, `.github/workflows/deploy.yml:8-15`, `.github/workflows/deploy.yml:27-50` |
+| 1. Propósito y metas | `src/data/projects.ts:214-227`, `src/pages/projects/index.astro:16-29`, `Dockerfile:1-12`, `nginx.conf:14-18`, `.github/workflows/deploy.yml:37-50` |
+| 2. Contexto | `src/components/Footer.astro:7-19`, `src/components/Ficha.astro:29-36`, `src/pages/about.astro:75-81`, `.github/workflows/deploy.yml:73-97`, `.github/workflows/deploy.yml:99-111` |
+| 3. Bloques y reglas | `src/pages/projects/[slug].astro:8-13`, `src/layouts/BaseLayout.astro:65-71`, `nginx.conf:7-18`, `.github/workflows/deploy.yml:8-15`, `.github/workflows/deploy.yml:52-61` |
+| 4. Ejecución | `astro.config.mjs:7-12`, `Dockerfile:6-12`, `src/layouts/BaseLayout.astro:65-83`, `src/components/Footer.astro:23`, `src/components/ThemeToggle.tsx:10-19` |
+| 5. Despliegue | `Dockerfile:1-12`, `package.json:5-10`, `src/stores/theme.ts:3-5`, `.github/workflows/deploy.yml:17-24`, `.github/workflows/deploy.yml:73-97` |
+| 6. Transversales | `src/stores/theme.ts:1-16`, `src/components/Ficha.astro:29-36`, `.github/workflows/deploy.yml:52-61`, `.github/workflows/deploy.yml:84-97`, `src/pages/about.astro:3-4` |
+| 7. Decisiones | `nginx.conf:14-18`, `.github/workflows/deploy.yml:99-111`, `src/data/site.ts:10-11`, `Dockerfile:8-12`, `scripts/check-site.mjs:324-328` |
+
+La búsqueda de clientes HTTP, formularios y acceso a bases de datos en el código no muestra esos mecanismos.
+
+La búsqueda de `fetch`, `axios`, `XMLHttpRequest`, `WebSocket`, cookies y formularios en `src/` no encontró implementaciones; no se deduce la retención de proveedores externos.

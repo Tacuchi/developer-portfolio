@@ -88,7 +88,7 @@ export const projects: Project[] = [
       y declara su licencia y su historial.
     `,
     tags: ['Agent Skills', 'Markdown', 'JavaScript'],
-    links: [github('agent-skills')],
+    links: [github('agent-skills'), { label: 'Ver en skills.sh', href: 'https://www.skills.sh/tacuchi/agent-skills' }],
     features: [
       '20 skills propias en 10 dominios',
       'Cada skill con versión, notas de release y licencia',

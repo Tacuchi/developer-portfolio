@@ -1,0 +1,19 @@
+---
+import Arrow from './Arrow.astro';
+import { site } from '../data/site';
+
+interface Props {
+  back: { href: string; label: string };
+}
+const { back } = Astro.props;
+---
+
+<header class="topbar page">
+  <a class="topbar-back" href={back.href}><Arrow dir="left" /> {back.label}</a>
+  <p class="topbar-name">
+    <a href="/">
+      <svg class="topbar-iso" width="28" height="28" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="12" fill="#111111" /><path d="M11 11H53V32H32V53H11Z" fill="#e6e6e2" /><path d="M46 39H53V53H39V46H46Z" fill="#b6f23c" /></svg>
+      <span>{site.name}</span>
+    </a>
+  </p>
+</header>

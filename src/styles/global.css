@@ -8,7 +8,14 @@
   font-display: swap;
 }
 
-/* El tono del acento se anima: va de chartreuse (118) a menta (160) y vuelve. */
+/* Respaldo con métricas cercanas a Archivo: el cambio de fuente no mueve el contenido. */
+@font-face {
+  font-family: "Archivo Fallback";
+  src: local("Arial");
+  size-adjust: 97%;
+}
+
+/* Tono base del acento (chartreuse). */
 @property --hue {
   syntax: "<number>";
   inherits: true;
@@ -16,7 +23,7 @@
 }
 
 @theme {
-  --font-sans: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Archivo", "Archivo Fallback", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   --color-paper: #e6e6e2;
   --color-ink: #111111;
@@ -64,15 +71,10 @@
   :root.dark { --act-c: 0.21; }
 }
 
-/* Cada lámina y cada pestaña lleva su propio tono, desfasado del resto. */
-[data-hue] {
-  --hue: calc(118 + var(--i, 0) * 10);
-  --color-act: oklch(var(--act-l) var(--act-c) var(--hue));
-}
-
-@keyframes hue-drift {
-  from { --hue: 118; }
-  to { --hue: 160; }
+/* El agua deriva de chartreuse a menta girando su tono: un filtro, sin repintar la página. */
+@keyframes agua-tono {
+  from { filter: hue-rotate(-10deg); }
+  to { filter: hue-rotate(32deg); }
 }
 
 @keyframes step-in {
@@ -90,12 +92,30 @@
   to { background-position: var(--march-to); }
 }
 
+/* Corrientes del fondo: solo transform (mover, girar, estirar), sin repintar el desenfoque. */
+@keyframes agua-1 {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1, 1); }
+  33%  { transform: translate(-18vw, 25vh) rotate(60deg) scale(1.2, 0.95); }
+  66%  { transform: translate(10vw, 45vh) rotate(130deg) scale(0.9, 1.15); }
+  100% { transform: translate(-8vw, 10vh) rotate(200deg) scale(1.1, 1); }
+}
+@keyframes agua-2 {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1, 1); }
+  50%  { transform: translate(-30vw, -35vh) rotate(-90deg) scale(1.25, 1.05); }
+  100% { transform: translate(-10vw, 5vh) rotate(-170deg) scale(0.95, 1.15); }
+}
+@keyframes agua-3 {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1, 1); }
+  50%  { transform: translate(45vw, -40vh) rotate(110deg) scale(1.3, 1.1); }
+  100% { transform: translate(20vw, -10vh) rotate(220deg) scale(1, 1.2); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  :root,
-  [data-hue] {
-    animation: hue-drift 26s ease-in-out infinite alternate;
-    animation-delay: calc(var(--i, 0) * -6.5s);
-  }
+  /* El fondo de agua se mueve solo; con movimiento reducido queda quieto. */
+  .agua span:nth-child(1) { animation: agua-1 24s ease-in-out infinite alternate; }
+  .agua span:nth-child(2) { animation: agua-2 29s ease-in-out infinite alternate; }
+  .agua span:nth-child(3) { animation: agua-3 34s ease-in-out infinite alternate; }
+  .agua { animation: agua-tono 26s ease-in-out infinite alternate; }
 
   /* Las piezas de la figura entran en orden cuando la lámina aparece.
      Sin JavaScript, o si el observador no dispara, la figura se ve igual. */
@@ -123,14 +143,11 @@
     font-family: var(--font-sans);
     scrollbar-color: var(--color-mute) var(--color-paper);
     -webkit-text-size-adjust: 100%;
-    scroll-padding-block: 3.25rem;
+    scroll-padding-block: 3.5rem 1.5rem;
   }
 
-  @media (min-width: 48rem) {
-    html { scroll-padding-block-end: 6rem; }
-  }
   @media (min-width: 64rem) {
-    html { scroll-padding-block-start: 4.25rem; }
+    html { scroll-padding-block: 1.5rem; }
   }
 
   body {
@@ -168,61 +185,441 @@
     padding-inline: var(--gutter);
   }
 
-  /* Franja superior: se queda fija; en móvil solo queda el menú. */
-  .site-header {
-    position: sticky;
-    top: calc(var(--tuck, 0px) * -1);
-    z-index: 20;
-    background-color: var(--color-paper);
-  }
-  .strip {
+  /* Armazón: panel fijo a la izquierda y contenido a la derecha; en móvil, apilados. */
+  .shell {
+    position: relative;
+    z-index: 1;
     display: grid;
-    grid-template-columns: 1fr;
-    column-gap: 2rem;
-    row-gap: 0.5rem;
-    align-items: baseline;
-    padding-block: 1.25rem 0.875rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
   }
-  .strip-name {
-    font-size: 1.0625rem;
-    font-weight: 700;
+  .shell-main {
+    min-width: 0;
+    padding-bottom: 2rem;
   }
-  .strip-headline {
-    font-size: 0.9375rem;
+  .shell-foot {
+    margin-top: 4rem;
+    font-size: 0.875rem;
     color: var(--color-mute);
-    text-wrap: balance;
   }
-  .strip-headline[data-home="false"] {
-    display: none;
+  .skip {
+    position: absolute;
+    left: -999px;
   }
-  .strip-nav {
-    display: flex;
-    gap: clamp(1.125rem, 2vw, 1.625rem);
-    font-size: 0.9375rem;
-  }
-  .strip-nav a {
-    padding: 0.125rem 0.5rem;
-    margin: -0.125rem -0.5rem;
+  .skip:focus {
+    left: 1rem;
+    top: 1rem;
+    z-index: 50;
+    padding: 0.5rem 1rem;
     border-radius: var(--r-s);
-    transition: background-color 120ms var(--ease);
-  }
-  .strip-nav a[aria-current="page"] {
     background-color: var(--color-act);
     color: var(--color-on-act);
+  }
+
+  /* Panel: placa oscura con la identidad, el menú y los enlaces, siempre a mano. */
+  .panel {
+    --color-ink: var(--color-panel-ink);
+    --color-mute: var(--color-panel-mute);
+    --color-focus: var(--color-act);
+    display: grid;
+    gap: 2rem;
+    margin-top: 1rem;
+    padding: 2rem 1.5rem;
+    border-radius: 0.75rem;
+    background-color: var(--color-panel);
+    color: var(--color-panel-ink);
+  }
+  .panel-name {
+    font-size: clamp(2.25rem, 4.2vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  .panel-name a {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .panel-name a:hover {
+    text-decoration: none;
+  }
+  .panel-name span {
+    min-width: 0;
+  }
+  .panel-iso {
+    flex: none;
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+  .panel-headline {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    max-width: 30ch;
+  }
+  .panel-tagline {
+    margin-top: 1rem;
+    max-width: 34ch;
+    color: var(--color-mute);
+  }
+  .panel-nav {
+    margin-top: 2.5rem;
+  }
+  .panel-nav ul {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .panel-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .panel-nav a:hover {
+    text-decoration: none;
+  }
+  .panel-nav-line {
+    display: block;
+    width: 2rem;
+    height: 1px;
+    background-color: currentColor;
+  }
+  .panel-nav a:hover,
+  .panel-nav a[aria-current] {
+    color: var(--color-ink);
+  }
+  .panel-nav a:hover .panel-nav-line,
+  .panel-nav a[aria-current] .panel-nav-line {
+    width: 4rem;
+    height: 2px;
+  }
+  .panel-nav a[aria-current] .panel-nav-line {
+    background-color: var(--color-act);
+  }
+  .panel-foot {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+  }
+  .panel-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
     font-weight: 700;
   }
+  .panel-links a {
+    color: var(--color-mute);
+  }
+  .panel-links a:hover {
+    color: var(--color-ink);
+  }
+  /* En móvil el menú del panel queda como atajos en fila, para saltar a cada sección. */
+  @media (max-width: 63.99rem) {
+    .panel-nav {
+      margin-top: 1.5rem;
+    }
+    .panel-nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 1.25rem;
+    }
+    .panel-nav a {
+      padding-block: 0.75rem;
+    }
+    .panel-nav-line {
+      display: none;
+    }
+  }
   @media (min-width: 64rem) {
-    .site-header {
+    .shell {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 4rem;
+    }
+    .shell-main {
+      padding-top: 6rem;
+    }
+    .panel {
+      position: sticky;
+      top: 1.5rem;
+      height: calc(100vh - 3rem);
+      margin-block: 1.5rem;
+      padding: 3rem 2.5rem 2rem;
+      align-content: space-between;
+      overflow-y: auto;
+    }
+  }
+  /* Pantallas bajas (1280×720, 1366×640): el panel se compacta para que los enlaces y el tema no queden fuera. */
+  @media (min-width: 64rem) and (max-height: 56rem) {
+    .panel {
+      padding-block: 2rem 1.5rem;
+    }
+    .panel-name {
+      font-size: clamp(2rem, 3.2vw, 2.5rem);
+    }
+    .panel-name a {
+      gap: 0.875rem;
+    }
+    .panel-iso {
+      width: 3rem;
+      height: 3rem;
+    }
+    .panel-headline,
+    .panel-tagline {
+      margin-top: 0.75rem;
+    }
+    .panel-nav {
+      margin-top: 1.5rem;
+    }
+    .panel-nav a {
+      padding-block: 0.3rem;
+    }
+  }
+  @media (min-width: 64rem) and (max-height: 42rem) {
+    .panel-tagline {
+      display: none;
+    }
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .panel-nav-line {
+      transition: width 200ms var(--ease), height 200ms var(--ease);
+    }
+  }
+
+  /* Fondo de agua: tres manchas difuminadas que se mueven solas.
+     Solo se anima transform, para que el navegador no repinte el desenfoque. */
+  .agua {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .agua span {
+    position: absolute;
+    display: block;
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    filter: blur(70px);
+    opacity: 0.4;
+    will-change: transform;
+  }
+  .agua span:nth-child(1) {
+    width: 55vmax;
+    height: 40vmax;
+    left: 35vw;
+    top: -10vh;
+    background-color: oklch(var(--act-l) var(--act-c) var(--hue) / 0.45);
+  }
+  .agua span:nth-child(2) {
+    width: 45vmax;
+    height: 50vmax;
+    left: 60vw;
+    top: 40vh;
+    border-radius: 58% 42% 37% 63% / 50% 40% 60% 50%;
+    background-color: oklch(var(--act-l) calc(var(--act-c) * 0.8) calc(var(--hue) + 35) / 0.35);
+  }
+  .agua span:nth-child(3) {
+    width: 40vmax;
+    height: 35vmax;
+    left: 10vw;
+    top: 70vh;
+    border-radius: 45% 55% 60% 40% / 55% 45% 55% 45%;
+    background-color: oklch(calc(var(--act-l) - 0.25) var(--act-c) calc(var(--hue) - 10) / 0.4);
+  }
+  /* Grano fino: evita las franjas del degradado. */
+  .agua::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  @media (max-width: 63.99rem) {
+    .agua span {
+      filter: blur(50px);
+    }
+  }
+
+  /* Secciones del inicio */
+  .home-section {
+    padding-bottom: 6rem;
+    scroll-margin-top: 1.5rem;
+  }
+  .home-section > p {
+    max-width: 62ch;
+  }
+  .home-section > p + p {
+    margin-top: 1rem;
+  }
+  .home-section > p strong {
+    color: var(--color-ink);
+  }
+  .contact-mail {
+    font-weight: 700;
+    text-decoration-line: underline;
+    overflow-wrap: anywhere;
+  }
+  /* Sobre el fondo de agua el gris no alcanza 4.5:1: la línea técnica va en tinta, más chica. */
+  .plate-tech {
+    margin-top: 1rem;
+    max-width: 40rem;
+    font-size: 0.9375rem;
+  }
+  .index-plain {
+    font-weight: 600;
+  }
+  .home-title {
+    margin-bottom: 1.5rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  @media (max-width: 63.99rem) {
+    .home-title {
+      position: sticky;
       top: 0;
+      z-index: 5;
+      margin-inline: calc(var(--gutter) * -1);
+      padding: 1rem var(--gutter);
+      background-color: color-mix(in oklch, var(--color-paper) 85%, transparent);
+      backdrop-filter: blur(8px);
     }
-    .strip {
-      grid-template-columns: 21rem 1fr auto;
-      padding-block: 1.5rem 1.125rem;
+  }
+
+  /* Tarjetas del inicio: puesto o proyecto, enteras clicables. */
+  .rows {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .row {
+    position: relative;
+    display: grid;
+    gap: 0.5rem 1.5rem;
+    padding: 1.25rem;
+    overflow: hidden;
+    border-radius: var(--r);
+    background-color: var(--color-card);
+  }
+  @media (min-width: 40rem) {
+    .row {
+      grid-template-columns: 8rem minmax(0, 1fr);
     }
-    .strip-headline,
-    .strip-headline[data-home="false"] {
-      display: block;
+  }
+  .row-when {
+    padding-top: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .row-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .row-title a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .row-title .arrow {
+    margin-left: 0.35rem;
+  }
+  .row-plain {
+    margin-top: 0.5rem;
+    font-weight: 600;
+  }
+  .row-text {
+    margin-top: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--color-mute);
+  }
+  .row-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.875rem;
+  }
+  .row-tags li {
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background-color: color-mix(in oklch, var(--color-act) 45%, transparent);
+  }
+  :root.dark .row-tags li {
+    background-color: color-mix(in oklch, var(--color-act) 25%, transparent);
+  }
+  /* La muesca del isotipo aparece en la esquina al pasar el mouse. */
+  .row::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    pointer-events: none;
+    background-color: var(--color-act);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%, 0 50%, 50% 50%, 50% 0);
+    transform: scale(0);
+    transform-origin: bottom right;
+  }
+  .row:focus-within::after {
+    transform: scale(1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .rows:has(.row:hover) .row:not(:hover) {
+      opacity: 0.45;
     }
+    .row:hover::after {
+      transform: scale(1);
+    }
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .row {
+      transition: opacity 200ms;
+    }
+    .row::after {
+      transition: transform 240ms var(--ease);
+    }
+    .row-title .arrow {
+      transition: transform 200ms var(--ease);
+    }
+    .row:hover .row-title .arrow {
+      transform: translate(4px, -2px);
+    }
+  }
+  .more {
+    margin-top: 1.25rem;
+  }
+  .more a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: var(--r-s);
+    background-color: var(--color-panel);
+    color: var(--color-panel-ink);
+    font-weight: 700;
+    --color-focus: var(--color-act);
+  }
+  .more a:hover {
+    text-decoration: none;
   }
 
   /* Lámina de producto */
@@ -268,9 +665,6 @@
     .plate {
       padding-block: 2rem 4rem;
       scroll-margin-top: 4.25rem;
-    }
-    .plate[data-plate] {
-      min-height: min(calc(100svh - 4.5rem), 54rem);
     }
     .model {
       font-size: min(10.5rem, calc(100cqw / (var(--chars) * 0.6)));
@@ -365,61 +759,6 @@
     width: 1em;
     height: 0.75em;
     vertical-align: -0.02em;
-  }
-
-  /* Índice de láminas: pestañas fijas al pie mientras se recorre el catálogo */
-  .plate-index {
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-    margin-inline: calc(var(--gutter) * -1);
-    padding: 0.5rem var(--gutter);
-    background-color: var(--color-paper);
-  }
-  .plate-index ol {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    column-gap: var(--gap-box);
-  }
-  .plate-index a {
-    display: block;
-    height: 100%;
-    padding: 0.5rem 0.75rem 0.5625rem;
-    border-radius: var(--r);
-    background-color: var(--color-card);
-    color: var(--color-mute);
-    text-decoration: none;
-    transition:
-      background-color 160ms var(--ease),
-      color 160ms var(--ease);
-  }
-  .plate-index a:hover {
-    color: var(--color-ink);
-  }
-  .plate-index a[aria-current="true"] {
-    background-color: var(--color-panel);
-    color: var(--color-panel-ink);
-  }
-  .plate-index a[aria-current="true"] span {
-    color: var(--color-act);
-  }
-  .plate-index span {
-    display: block;
-    font-size: 0.8125rem;
-  }
-  .plate-index strong {
-    margin-top: 0.25rem;
-    font-size: clamp(1.0625rem, 1.7vw, 1.5rem);
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-  }
-  @media (min-width: 48rem) {
-    .plate-index a {
-      padding: 0.625rem 0.875rem 0.75rem;
-    }
-    .plate-index strong {
-      display: block;
-    }
   }
 
   /* Figura: el mecanismo sobre una cuadrícula de plano.
@@ -1031,24 +1370,68 @@
     text-wrap: pretty;
   }
 
-  /* Pie y selector de tema */
-  .foot {
-    margin-top: 3rem;
-    font-size: 0.9375rem;
+  /* Subpáginas: todo el ancho, una barra para volver y el pie con los enlaces. */
+  .sub {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
-  .foot-inner {
+  .sub-main {
+    flex: 1;
+  }
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-block: 1.25rem;
+  }
+  .topbar-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: var(--r-s);
+    background-color: var(--color-panel);
+    color: var(--color-panel-ink);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    --color-focus: var(--color-act);
+  }
+  .topbar-back:hover {
+    text-decoration: none;
+  }
+  .topbar-name {
+    font-weight: 700;
+  }
+  .topbar-name a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .topbar-iso {
+    flex: none;
+  }
+  .foot {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem 2.5rem;
+    margin-top: 3rem;
     padding-block: 1.5rem 2rem;
+    font-size: 0.9375rem;
   }
   .foot-links {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1.5rem;
   }
+
+  /* Selector de tema */
   .theme {
     display: flex;
     gap: 1.125rem;

@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import Arrow from '../../components/Arrow.astro';
 import Ficha from '../../components/Ficha.astro';
 import Figure from '../../components/Figure.astro';
 import { projects } from '../../data/projects';
@@ -21,12 +20,8 @@ const paragraphs = project.longDescription
 const longestWord = Math.max(...project.title.split(/\s+/).map((word) => word.length));
 ---
 
-<BaseLayout title={project.title} description={project.description}>
-  <article class="plate">
-    <a href="/projects" class="inline-flex items-center gap-2 mb-8 text-[0.9375rem]">
-      <Arrow dir="left" /> Volver a proyectos
-    </a>
-
+<BaseLayout back={{ href: '/projects', label: 'Volver a proyectos' }} title={project.title} description={project.description}>
+  <article class="plate" data-plate>
     <div class="plate-head">
       <h1 class="model" style={`--chars:${project.title.length};--word:${longestWord}`}>
         {project.title}
@@ -35,7 +30,14 @@ const longestWord = Math.max(...project.title.split(/\s+/).map((word) => word.le
 
     <div class="plate-body">
       <div class="plate-main">
-        <p class="lead">{project.description}</p>
+        {project.plain ? (
+          <>
+            <p class="lead" data-plain>{project.plain}</p>
+            <p class="plate-tech">{project.description}</p>
+          </>
+        ) : (
+          <p class="lead">{project.description}</p>
+        )}
         <Figure slug={project.slug} label={project.title} />
 
         <section class="mt-12">
@@ -50,3 +52,18 @@ const longestWord = Math.max(...project.title.split(/\s+/).map((word) => word.le
     </div>
   </article>
 </BaseLayout>
+
+<script>
+  // La figura entra una sola vez, cuando aparece. Sin JavaScript se ve igual, quieta.
+  const reveal = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-in');
+        reveal.unobserve(entry.target);
+      }
+    },
+    { threshold: 0.2 },
+  );
+  document.querySelectorAll('[data-plate]').forEach((plate) => reveal.observe(plate));
+</script>

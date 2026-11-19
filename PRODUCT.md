@@ -19,7 +19,7 @@ Ambos llegan de paso, leen poco y deciden rápido si siguen. El idioma del sitio
 
 Sitio personal de Jesús Loayza Tacuchi en `tacuchi.dev`. Existe para tener el perfil listo «por si acaso», sin buscar trabajo ahora, y para que lo encuentren por sus herramientas y proyectos.
 
-Éxito: quien mira el inicio diez segundos se lleva las herramientas que construye (agent-workflow, agent-memory, agent-skills, system-updater) como cosas reales y usables. El nombre va detrás de ellas.
+Éxito: quien mira el inicio diez segundos, aunque no sea técnico, entiende quién es Jesús, a qué se dedica y adónde seguir. Las herramientas que construye (agent-workflow, agent-memory, agent-skills, system-updater) aparecen después como prueba, cada una explicada en lenguaje simple (cambio confirmado el 2026-11-19, tras ver que familiares no entendían el sitio).
 
 ## Positioning
 
@@ -27,7 +27,7 @@ Presencia pasiva: hablan los artefactos (sitio, README, páginas de paquetes), n
 
 ## Operating Context
 
-- Tres páginas (inicio, Sobre mí, proyectos) y nueve páginas de detalle de proyecto. Las rutas no cambian.
+- Tres páginas (inicio, Sobre mí, proyectos) y nueve páginas de detalle de proyecto. El inicio lleva el panel lateral; las demás ocupan todo el ancho, con una barra para volver y el pie con los enlaces. Las rutas no cambian.
 - Perfiles enlazados: GitHub, LinkedIn y npm.
 - Se despliega como sitio estático detrás de nginx; el despliegue lo dispara la persona.
 
@@ -45,7 +45,7 @@ Presencia pasiva: hablan los artefactos (sitio, README, páginas de paquetes), n
 - Nombre: Jesús Loayza Tacuchi. Alias: Tacuchi.
 - Titular único, sin cambiar una letra: «Ingeniero de software senior · apps móviles y plataformas web · herramientas para agentes de IA».
 - Se presenta como contribuidor individual senior. Ningún texto presenta jefatura o liderazgo formal.
-- El contenido (titular, cinco destacados, nueve puestos) está aprobado: un rediseño cambia cómo se ve, no qué dice.
+- El contenido (titular, cinco destacados, nueve puestos) está aprobado: un rediseño cambia cómo se ve, no qué dice. Desde el 2026-11-19 se suman la frase del panel, el Sobre mí del inicio y una línea en lenguaje simple por destacado; su redacción la revisa la persona antes de publicarla.
 - Un resultado se siente equivocado si es llamativo o muy animado, si parece de diseñador y no de ingeniero, o si parece la plantilla típica de portafolio de desarrollador (confirmado el 2026-11-14).
 
 ## Evidence on Hand
@@ -56,7 +56,7 @@ Presencia pasiva: hablan los artefactos (sitio, README, páginas de paquetes), n
 
 ## Product Principles
 
-1. Los proyectos primero; la persona detrás.
+1. La persona primero, en lenguaje simple; los proyectos como prueba.
 2. Criterio sobre moda: cada elemento debe ganarse su lugar.
 3. Presencia pasiva: nada que pida atención ni mantenimiento constante.
 4. Lo que se afirma es verificable en un enlace.

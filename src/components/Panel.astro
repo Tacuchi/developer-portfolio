@@ -1,0 +1,69 @@
+---
+import ThemeToggle from './ThemeToggle.tsx';
+import { site } from '../data/site';
+
+// El panel solo vive en el inicio: su menú recorre las secciones de la página.
+const navItems = [
+  { id: 'sobre-mi', label: 'Sobre mí' },
+  { id: 'experiencia', label: 'Experiencia' },
+  { id: 'proyectos', label: 'Proyectos' },
+  { id: 'contacto', label: 'Contacto' },
+];
+---
+
+<header class="panel">
+  <div>
+    <h1 class="panel-name">
+      <a href="/">
+        <svg class="panel-iso" width="72" height="72" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="12" fill="#111111" /><path d="M11 11H53V32H32V53H11Z" fill="#e6e6e2" /><path d="M46 39H53V53H39V46H46Z" fill="#b6f23c" /></svg>
+        <span>{site.name}</span>
+      </a>
+    </h1>
+    <p class="panel-headline">{site.headline}</p>
+    <p class="panel-tagline">{site.tagline}</p>
+
+    <nav class="panel-nav" aria-label="Principal">
+      <ul>
+        {navItems.map((item) => (
+          <li>
+            <a href={`#${item.id}`} data-nav={item.id}>
+              <span class="panel-nav-line" aria-hidden="true"></span>{item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="panel-foot">
+    <ul class="panel-links">
+      {site.profiles.map((profile) => (
+        <li><a href={profile.href} target="_blank" rel="noopener noreferrer me">{profile.label}</a></li>
+      ))}
+      <li><a href={site.cv}>CV</a></li>
+      <li><a href={`mailto:${site.email}`}>Correo</a></li>
+    </ul>
+    <ThemeToggle client:load />
+  </div>
+</header>
+
+<script>
+  // Marca en el menú la sección que se está leyendo.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')].map((link) => [link.dataset.nav, link]),
+  );
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        links.forEach((link) => link.removeAttribute('aria-current'));
+        links.get(entry.target.id)?.setAttribute('aria-current', 'true');
+      }
+    },
+    { rootMargin: '-30% 0px -60% 0px' },
+  );
+  links.forEach((_, id) => {
+    const section = id && document.getElementById(id);
+    if (section) observer.observe(section);
+  });
+</script>

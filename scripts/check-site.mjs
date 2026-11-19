@@ -163,13 +163,28 @@ for (const file of files.filter((file) => file.endsWith('.html'))) {
     .find((content) => decode(content).includes(NAME));
   expect(Boolean(identity), `${at}: la cabecera debe enlazar el nombre completo a la portada`);
   expect(
-    Boolean(identity && /<svg\b[^>]*class="strip-iso(?: [^"]*)?"[^>]*aria-hidden="true"/.test(identity)),
+    Boolean(identity && /<svg\b[^>]*class="(?:panel|topbar)-iso(?: [^"]*)?"[^>]*aria-hidden="true"/.test(identity)),
     `${at}: falta el isotipo de la cabecera, oculto a lectores de pantalla`,
   );
   expect(
     Boolean(identity && !/sr-only/.test(identity) && new RegExp(`<span\\b[^>]*>${NAME}</span>`).test(decode(identity))),
     `${at}: el nombre completo debe verse en la cabecera junto al isotipo`,
   );
+  // El inicio abre con el panel; las subpáginas ocupan todo el ancho y vuelven por la barra de arriba.
+  const isHome = at === 'index.html';
+  const kind = isHome ? 'panel' : 'topbar';
+  expect(new RegExp(`^<header\\b[^>]*class="${kind}(?: [^"]*)?"`).test(header),
+    `${at}: la página debe abrir con ${isHome ? 'el panel' : 'la barra para volver'}`);
+  if (!isHome) {
+    expect(/<a\b[^>]*class="topbar-back"[^>]*href="\/(?:projects)?"/.test(header) || /<a\b[^>]*href="\/(?:projects)?"[^>]*class="topbar-back"/.test(header),
+      `${at}: falta el enlace para volver`);
+  }
+  // Perfiles, CV y correo siempre a mano: en el panel o en el pie.
+  const handy = hrefs(isHome ? header : (html.match(/<footer\b[^>]*>[\s\S]*?<\/footer>/) ?? [''])[0]);
+  expect(PROFILES.every((profile) => handy.includes(profile)) && handy.includes(CV_PATH)
+    && handy.some((href) => href.startsWith('mailto:')),
+    `${at}: ${isHome ? 'el panel' : 'el pie'} debe llevar los perfiles, el CV y el correo`);
+  expect(!/class="(?:site-header|strip)\b/.test(html), `${at}: no debe volver la franja superior`);
   expect(meta(html, 'og:image') === `${ORIGIN}/og.png`, `${at}: la vista previa debe ser /og.png`);
 }
 
@@ -252,10 +267,12 @@ EXPERIENCE.forEach(([period, employer, client, role], index) => {
   expect((entry?.description.length ?? 0) > 40, `${at}: falta la descripción`);
 });
 const aboutText = text(about.replace(/<head>[\s\S]*?<\/head>/, ''));
-const cvLinks = tags(about, 'a').filter((tag) => attr(tag, 'href') === CV_PATH);
+// El panel enlaza el CV en todas las páginas; aquí se cuenta el del contenido.
+const aboutMain = (about.match(/<main\b[^>]*>([\s\S]*?)<\/main>/) ?? [])[1] ?? '';
+const cvLinks = tags(aboutMain, 'a').filter((tag) => attr(tag, 'href') === CV_PATH);
 expect(cvLinks.length === 1, `sobre mí: se esperaba un enlace a ${CV_PATH}, hay ${cvLinks.length}`);
 expect(
-  [...about.matchAll(/<a\b[^>]*href="\/cv"[^>]*>([\s\S]*?)<\/a>/g)].some((m) => text(m[1]) === 'Descargar CV'),
+  [...aboutMain.matchAll(/<a\b[^>]*href="\/cv"[^>]*>([\s\S]*?)<\/a>/g)].some((m) => text(m[1]) === 'Descargar CV'),
   `sobre mí: el enlace a ${CV_PATH} debe decir «Descargar CV»`,
 );
 for (const word of [/\bl[ií]der/i, /\bjef[ea]s?\b/i]) {
@@ -297,12 +314,33 @@ expect(styles.some(({ selector, body }) => selector === '.ficha' && /--color-foc
   'ficha: el foco debe usar el acento sobre la placa');
 expect(styles.some(({ selector, body }) => selector === 'html' && /scroll-padding-block:\s*[^;]+/.test(body)),
   'foco: falta espacio de desplazamiento para los elementos fijos');
-const projectIndex = (home.match(/<nav\b[^>]*class="plate-index"[^>]*>([\s\S]*?)<\/nav>/) ?? [])[1] ?? '';
-const indexNames = [...projectIndex.matchAll(/<strong\b([^>]*)>([^<]+)<\/strong>/g)];
-expect(indexNames.length === FEATURED.length && indexNames.every(([, attributes, name]) =>
-  attributes.includes('max-md:sr-only') && text(name).length > 0)
-  && !styles.some(({ selector, body }) => selector.includes('.plate-index strong') && /display:\s*none/.test(body)),
-  'índice: cada nombre de proyecto debe seguir disponible al lector en móvil');
+// --- Inicio de una sola página: menú de secciones, línea simple por destacado, fondo quieto si se pide ---
+const SECTIONS = ['sobre-mi', 'experiencia', 'proyectos', 'contacto'];
+const homeNav = hrefs((home.match(/<nav\b[^>]*class="panel-nav"[^>]*>([\s\S]*?)<\/nav>/) ?? [])[1] ?? '');
+expect(homeNav.join() === SECTIONS.map((id) => `#${id}`).join(),
+  `inicio: el menú debe recorrer ${SECTIONS.join(', ')}; llegó ${homeNav.join(', ')}`);
+expect(SECTIONS.every((id) => new RegExp(`<section\\b[^>]*id="${id}"`).test(home)), 'inicio: falta alguna de sus cuatro secciones');
+const plainLines = [...home.matchAll(/<p\b[^>]*data-plain[^>]*>([\s\S]*?)<\/p>/g)].map(([, line]) => text(line));
+expect(plainLines.length === FEATURED.length && plainLines.every((line) => line.length > 20),
+  'inicio: cada destacado debe explicar en lenguaje simple qué resuelve');
+expect([...home.matchAll(/<a\b[^>]*href="\/about"[^>]*>([\s\S]*?)<\/a>/g)].some(([, label]) => text(label) === 'Ver trayectoria completa'),
+  'inicio: falta el enlace «Ver trayectoria completa»');
+const waterMotion = styles.filter(({ selector, body }) => selector.includes('.agua') && /animation[\w-]*:/.test(body));
+expect(waterMotion.length > 0 && waterMotion.every(({ parents }) =>
+  parents.some((parent) => /prefers-reduced-motion:\s*no-preference/.test(parent))),
+  'fondo: su movimiento debe detenerse con movimiento reducido');
+// Cada puesto del inicio lleva a su lugar en /about; cada destacado se explica también en su ficha.
+const jobLinks = hrefs(home).filter((href) => href.startsWith('/about#'));
+expect(jobLinks.length === 4 && jobLinks.every((href) => about.includes(`id="${href.split('#')[1]}"`)),
+  'inicio: cada puesto debe llevar a su lugar en /about');
+for (const slug of FEATURED) {
+  expect(/<p\b[^>]*data-plain/.test(htmlOf.get(`/projects/${slug}/`) ?? ''), `proyectos: ${slug} debe explicarse en lenguaje simple en su página`);
+}
+// La deriva de tono anima el agua como filtro; en :root repintaba la página entera en cada fotograma.
+expect(!styles.some(({ selector, body }) => /(^|,)\s*:root\b/.test(selector) && /animation[\w-]*:/.test(body)),
+  'fondo: ninguna animación sobre :root (repinta toda la página)');
+expect(['Tecnologías', 'Contacto'].every((title) => new RegExp(`<h2\\b[^>]*>${title}</h2>`).test(about)),
+  'sobre mí: debe conservar Tecnologías y Contacto');
 const visibleCopy = [home, about].map((html) => text(html.replace(/<head>[\s\S]*?<\/head>|<script\b[^>]*>[\s\S]*?<\/script>/g, ''))).join(' ');
 expect(['Móvil', 'Herramientas', 'Correo'].every((label) => visibleCopy.includes(label)) && !/\b(Mobile|Tools|Email)\b/.test(visibleCopy),
   'rótulos: usar Móvil, Herramientas y Correo en español');

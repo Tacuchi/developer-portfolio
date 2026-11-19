@@ -1,110 +1,79 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Arrow from '../components/Arrow.astro';
-import Ficha from '../components/Ficha.astro';
-import Figure from '../components/Figure.astro';
+import { site } from '../data/site';
+import { experience } from '../data/experience';
 import { featuredProjects } from '../data/projects';
 
-const skills = {
-  Móvil: ['Flutter', 'Dart', 'Kotlin', 'Android', 'Jetpack Compose'],
-  Frontend: ['Angular', 'TypeScript', 'Astro', 'Tailwind CSS'],
-  Backend: ['Spring Boot', 'Java', 'PostgreSQL', 'Firebase'],
-  'Agentes de IA': ['TypeScript', 'Node.js', 'Python', 'MCP', 'SQLite'],
-  Herramientas: ['Git', 'Docker', 'Kubernetes', 'Coolify', 'Cloudflare'],
-};
-
-const plateNumber = (index: number) => String(index + 1).padStart(2, '0');
-const longestWord = (title: string) => Math.max(...title.split(/\s+/).map((word) => word.length));
+// El inicio muestra los puestos más recientes; la trayectoria completa vive en /about.
+const recent = experience.slice(0, 4);
+// «09/2023 – 08/2024» → «2023 – 2024»; «04/2023 – 08/2023» → «2023».
+const years = (period: string) => [...new Set(period.split(' – ').map((part) => part.split('/').pop()))].join(' – ');
+const number = (index: number) => String(index + 1).padStart(2, '0');
 ---
 
 <BaseLayout>
-  <div>
-    {featuredProjects.map((project, index) => (
-      <section class="plate" id={project.slug} data-plate data-hue style={`--i:${index}`}>
-        <div class="plate-head">
-          <h2
-            class="model"
-            style={`--chars:${project.title.length};--word:${longestWord(project.title)}`}
-          >
-            <a href={`/projects/${project.slug}`}>{project.title}</a>
-          </h2>
-        </div>
+  <section id="sobre-mi" class="home-section">
+    <h2 class="home-title">Sobre mí</h2>
+    <p>
+      Hola, soy <strong>Jesús</strong>, ingeniero de software. Programo desde 2014 y lo sigo haciendo
+      por lo mismo que empecé: curiosidad. Me gusta entender cómo y por qué funciona algo antes de usarlo.
+    </p>
+    <p>
+      Empecé haciendo apps para celulares y sistemas web para empresas, y eso sigo haciendo en mi trabajo.
+      En paralelo construyo <strong>herramientas para que los asistentes de IA trabajen con orden</strong>:
+      que sigan un plan, que recuerden lo aprendido y que respeten buenas prácticas.
+    </p>
+  </section>
 
-        <div class="plate-body">
-          <div class="plate-main">
-            <p class="lead">{project.description}</p>
-            <Figure slug={project.slug} label={project.title} />
+  <section id="experiencia" class="home-section">
+    <h2 class="home-title">Experiencia</h2>
+    <ol class="rows">
+      {recent.map((exp, index) => (
+        <li class="row">
+          <span class="row-when">{years(exp.period)}</span>
+          <div>
+            <h3 class="row-title">
+              <a href={`/about#puesto-${index + 1}`}>{exp.role} · {exp.employer}<Arrow /></a>
+            </h3>
+            <p class="row-text">{exp.description}</p>
+            <ul class="row-tags">{exp.tech.map((tech) => <li>{tech}</li>)}</ul>
           </div>
-          <Ficha project={project} title="Ficha" number={plateNumber(index)} />
-        </div>
-      </section>
-    ))}
-
-    <nav class="plate-index" aria-label="Proyectos destacados">
-      <ol>
-        {featuredProjects.map((project, index) => (
-          <li data-hue style={`--i:${index}`}>
-            <a href={`#${project.slug}`} data-plate-link={project.slug}>
-              <span>{plateNumber(index)}</span>
-              <strong class="max-md:sr-only">{project.title}</strong>
-            </a>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  </div>
-
-  <section class="section">
-    <h2 class="section-title">Tecnologías</h2>
-    <dl class="spec">
-      {Object.entries(skills).map(([group, items]) => (
-        <div>
-          <dt>{group}</dt>
-          <dd>{items.join(', ')}</dd>
-        </div>
+        </li>
       ))}
-    </dl>
+    </ol>
+    <p class="more"><a href="/about">Ver trayectoria completa <Arrow /></a></p>
+  </section>
 
-    <p class="act-row">
-      <a class="act" href="/projects">Ver todos los proyectos <Arrow /></a>
+  <section id="proyectos" class="home-section">
+    <h2 class="home-title">Proyectos</h2>
+    <ol class="rows">
+      {featuredProjects.map((project, index) => (
+        <li class="row">
+          <span class="row-when">{number(index)}</span>
+          <div>
+            <h3 class="row-title">
+              <a href={`/projects/${project.slug}`}>{project.title}<Arrow /></a>
+            </h3>
+            <p class="row-plain" data-plain>{project.plain}</p>
+            <p class="row-text">{project.description}</p>
+            <ul class="row-tags">{project.tags.map((tag) => <li>{tag}</li>)}</ul>
+          </div>
+        </li>
+      ))}
+    </ol>
+    <p class="more"><a href="/projects">Ver todos los proyectos <Arrow /></a></p>
+  </section>
+
+  <section id="contacto" class="home-section">
+    <h2 class="home-title">Contacto</h2>
+    <p>
+      ¿Quieres escribirme sobre alguna de estas herramientas o proyectos? Mi correo es
+      <a class="contact-mail" href={`mailto:${site.email}`}>{site.email}</a>.
+    </p>
+    <p class="act-row mt-6">
+      <a class="act" href={`mailto:${site.email}`}>Escríbeme</a>
+      <a class="act" href={site.cv}>Descargar CV</a>
     </p>
   </section>
 </BaseLayout>
-
-<script>
-  // Marca en el índice la lámina que se está leyendo.
-  const links = new Map(
-    [...document.querySelectorAll<HTMLAnchorElement>('[data-plate-link]')].map((link) => [
-      link.dataset.plateLink,
-      link,
-    ]),
-  );
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        links.forEach((link) => link.removeAttribute('aria-current'));
-        links.get(entry.target.id)?.setAttribute('aria-current', 'true');
-      }
-    },
-    { rootMargin: '-35% 0px -60% 0px' },
-  );
-
-  // La figura de cada lámina entra una sola vez, cuando la lámina aparece.
-  const reveal = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        entry.target.classList.add('is-in');
-        reveal.unobserve(entry.target);
-      }
-    },
-    { threshold: 0.2 },
-  );
-
-  document.querySelectorAll('[data-plate]').forEach((plate) => {
-    observer.observe(plate);
-    reveal.observe(plate);
-  });
-</script>

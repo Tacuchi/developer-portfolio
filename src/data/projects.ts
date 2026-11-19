@@ -7,6 +7,8 @@ export interface Project {
   slug: string;
   title: string;
   description: string;
+  // Qué resuelve, dicho para quien no es técnico. Solo los destacados la llevan.
+  plain?: string;
   longDescription: string;
   tags: string[];
   features: string[];
@@ -30,6 +32,8 @@ export const projects: Project[] = [
     slug: 'agent-workflow',
     title: 'agent-workflow',
     featured: true,
+    plain:
+      'Ordena el trabajo de los asistentes de IA que programan: primero se acuerda qué hacer, luego cómo, y recién después se hace.',
     description:
       'Sistema de trabajo para agentes de código: lleva un pedido de spec a plan y a ejecución verificable, con la CLI aw.',
     longDescription: `
@@ -54,6 +58,8 @@ export const projects: Project[] = [
     slug: 'agent-memory',
     title: 'agent-memory',
     featured: true,
+    plain:
+      'Hace que los asistentes de IA recuerden lo que aprendieron en sesiones anteriores.',
     description:
       'Memoria local para agentes de código: SQLite con búsqueda híbrida, servidor MCP, CLI e integración con Claude Code.',
     longDescription: `
@@ -77,6 +83,8 @@ export const projects: Project[] = [
     slug: 'agent-skills',
     title: 'agent-skills',
     featured: true,
+    plain:
+      'Un manual de buenas prácticas que los asistentes de IA consultan antes de trabajar.',
     description:
       'Catálogo personal de skills para agentes de código, agrupadas por dominio y publicadas con versión.',
     longDescription: `
@@ -101,6 +109,8 @@ export const projects: Project[] = [
     slug: 'system-updater',
     title: 'system-updater',
     featured: true,
+    plain:
+      'Actualiza todos los programas de la computadora con un solo comando.',
     description:
       'TUI multiplataforma para actualizar todos los gestores de paquetes del sistema desde un solo flujo.',
     longDescription: `
@@ -125,6 +135,8 @@ export const projects: Project[] = [
     slug: 'emotiva-app',
     title: 'Emotiva App',
     featured: true,
+    plain:
+      'App para que los pacientes de un centro psicológico reserven y recuerden sus citas.',
     description:
       'Aplicación móvil para centro psicológico con gestión de citas, notificaciones y autenticación Firebase.',
     longDescription: `

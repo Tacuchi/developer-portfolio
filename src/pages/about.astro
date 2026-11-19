@@ -3,6 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 import { experience } from '../data/experience';
 
+const skills = {
+  Móvil: ['Flutter', 'Dart', 'Kotlin', 'Android', 'Jetpack Compose'],
+  Frontend: ['Angular', 'TypeScript', 'Astro', 'Tailwind CSS'],
+  Backend: ['Spring Boot', 'Java', 'PostgreSQL', 'Firebase'],
+  'Agentes de IA': ['TypeScript', 'Node.js', 'Python', 'MCP', 'SQLite'],
+  Herramientas: ['Git', 'Docker', 'Kubernetes', 'Coolify', 'Cloudflare'],
+};
+
 const areas = [
   {
     title: 'Apps móviles',
@@ -19,7 +27,7 @@ const areas = [
 ];
 ---
 
-<BaseLayout title="Sobre mí" description="Trayectoria de Jesús Loayza Tacuchi: ingeniero de software senior en apps móviles, plataformas web y herramientas para agentes de IA.">
+<BaseLayout back={{ href: '/', label: 'Volver al inicio' }} title="Sobre mí" description="Trayectoria de Jesús Loayza Tacuchi: ingeniero de software senior en apps móviles, plataformas web y herramientas para agentes de IA.">
   <section class="plate">
     <h1 class="page-title">Sobre mí</h1>
 
@@ -50,8 +58,8 @@ const areas = [
     <h2 class="section-title">Experiencia</h2>
 
     <div class="box-list">
-      {experience.map((exp) => (
-        <div data-experience class="job">
+      {experience.map((exp, index) => (
+        <div data-experience id={`puesto-${index + 1}`} class="job">
           <h3>{exp.role}</h3>
           <span class="job-period" data-current={exp.period.endsWith('actualidad') ? '' : undefined}>
             {exp.period}
@@ -65,6 +73,18 @@ const areas = [
         </div>
       ))}
     </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Tecnologías</h2>
+    <dl class="spec">
+      {Object.entries(skills).map(([group, items]) => (
+        <div>
+          <dt>{group}</dt>
+          <dd>{items.join(', ')}</dd>
+        </div>
+      ))}
+    </dl>
   </section>
 
   <section class="section">

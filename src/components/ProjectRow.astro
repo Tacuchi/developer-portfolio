@@ -14,6 +14,7 @@ const { project, number } = Astro.props;
   <h3 class="index-name">
     <a href={`/projects/${project.slug}`}>{project.title}</a>
   </h3>
+  {project.plain && <p class="index-plain">{project.plain}</p>}
   <p>{project.description}</p>
   <p class="index-made">{project.tags.join(', ')}</p>
 </li>

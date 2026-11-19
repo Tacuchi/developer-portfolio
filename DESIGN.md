@@ -102,17 +102,18 @@ components:
 
 ## Overview
 
-**Creative North Star: "La ficha técnica"**
+**Creative North Star: "La ficha técnica, con la persona a mano"**
 
-Cada herramienta se presenta como un producto de catálogo industrial: nombre de modelo enorme, una figura de su mecanismo sobre cuadrícula de plano y una ficha numerada. El nombre de la persona va detrás de las herramientas, en una franja discreta.
+En el inicio, un panel oscuro fijo a la izquierda presenta a la persona: isotipo, nombre, titular, una frase en lenguaje simple, el menú y sus enlaces. A la derecha el inicio se lee de corrido (Sobre mí, Experiencia, Proyectos, Contacto). Las subpáginas ocupan todo el ancho, con una barra para volver arriba y el pie con los enlaces. Cada herramienta conserva su página de catálogo industrial: nombre de modelo enorme, una figura de su mecanismo sobre cuadrícula de plano y una ficha numerada.
 
-El sistema es sobrio y plano. No hay reglas ni sombras: todo se separa por cajas de tono. El único color es un acento lima que solo aparece como relleno y que deriva despacio de tono.
+El sistema es sobrio y plano. No hay reglas ni sombras: todo se separa por cajas de tono. El único color es un acento lima que solo aparece como relleno; el fondo de agua deriva despacio hacia menta.
 
 **Key Characteristics:**
 - Una sola familia tipográfica (Archivo) hace todo el trabajo.
 - Cajas de tono en lugar de líneas; una placa oscura para la ficha.
 - Acento lima apagado en claro y fosforescente en oscuro.
 - Figuras hechas solo de geometría, sin ilustración.
+- Un fondo de agua: tres manchas lima y menta, difuminadas, que se cruzan despacio.
 - Movimiento lento y escaso; nada con «reducir movimiento».
 
 ## Colors
@@ -120,7 +121,7 @@ El sistema es sobrio y plano. No hay reglas ni sombras: todo se separa por cajas
 Papel gris neutro, tinta casi negra y un único acento lima.
 
 ### Primary
-- **Lima** (`act`): relleno de lo accionable y de la pieza clave de cada figura; color de los números dentro de la ficha. El tono deriva entre 118 (chartreuse) y 160 (menta) en un ciclo de 26 s, desfasado por lámina. En tema oscuro pasa a `act-dark`.
+- **Lima** (`act`): relleno de lo accionable y de la pieza clave de cada figura; color de los números dentro de la ficha. Fijo en chartreuse (118-128) en la página; solo el fondo de agua deriva hacia menta (giro de tono de 26 s, como filtro, para no repintar la página). En tema oscuro pasa a `act-dark`.
 
 ### Neutral
 - **Papel** (`paper`): fondo de página.
@@ -128,13 +129,12 @@ Papel gris neutro, tinta casi negra y un único acento lima.
 - **Gris de apoyo** (`mute`): texto secundario.
 - **Caja** (`card`): fondo de cajas y pestañas; tiñe, difuminado, el plano de la figura.
 - **Pieza** (`raise`): cajas de paso dentro de la figura.
-- **Placa** (`panel`, `panel-ink`, `panel-mute`): la ficha y el estado activo o de paso del cursor.
+- **Placa** (`panel`, `panel-ink`, `panel-mute`): el panel lateral, la ficha y el estado activo o de paso del cursor.
 - Las variantes `-dark` son el tema oscuro, compuesto aparte: la placa se aclara (`panel-dark`) en vez de invertirse.
 
 ### Named Rules
 **La regla del relleno.** La lima nunca es texto ni trazo fino sobre el papel claro. Va como relleno con texto `on-act` encima, o como número sobre la placa oscura. El resaltado de una frase (`mark`) y el periodo del puesto vigente siguen la misma regla: relleno lima, texto `on-act`.
 
-**La regla del tono propio.** Cada lámina y cada pestaña lleva su propio tono del acento (`data-hue` con índice `--i`).
 
 ## Typography
 
@@ -156,11 +156,9 @@ Papel gris neutro, tinta casi negra y un único acento lima.
 
 ## Layout
 
-Página de hasta 90rem con margen lateral fluido (`gutter`). Franja superior fija con nombre, titular y menú; en móvil se recoge y deja solo el menú.
+**Inicio:** armazón de hasta 80rem con margen lateral fluido (`gutter`). Desde 64rem, dos columnas 5/7: el panel fijo a la izquierda, con la altura de la ventana, y el contenido a la derecha. Bajo 64rem el panel se apila arriba sin quedar fijo y los títulos de sección quedan fijos al hacer scroll.
 
-Cada lámina ocupa una pantalla en escritorio: nombre de modelo en fila propia y, debajo, dos columnas 7/5 (frase y figura a la izquierda, ficha a la derecha). Bajo 64rem todo pasa a una columna.
-
-El índice de láminas (01–05) queda fijo al pie mientras se recorre el catálogo y marca la lámina visible.
+**Subpáginas** (Sobre mí, proyectos, cada proyecto, error): página de hasta 90rem a todo el ancho. Arriba, la barra con el botón «Volver» (placa) a la izquierda y el isotipo con el nombre a la derecha; abajo, el pie con perfiles, CV, correo y tema. En cada proyecto, el nombre de modelo va en fila propia y, debajo, dos columnas 7/5 (frase y figura a la izquierda, ficha a la derecha); bajo 64rem, una columna.
 
 Las listas (proyectos, trayectoria, tecnologías) son pilas de cajas separadas por `box-gap`.
 
@@ -185,18 +183,24 @@ Cajas rectangulares con esquinas apenas redondeadas (`rounded.md` en cajas, `rou
 ### Cards / Containers
 - **Caja:** fondo `card`, esquina `rounded.md`, sin borde ni sombra.
 - **Caja de proyecto:** toda la caja es el enlace; al pasar el cursor o recibir foco se vuelve placa y su número pasa a lima.
+- **Tarjeta del inicio** (puesto o proyecto): caja `card` entera clicable. Al pasar el cursor, las demás tarjetas se apagan, la flecha avanza y aparece en la esquina la muesca lima del isotipo (también con foco). Nada sigue al cursor.
+- **Panel:** placa con esquina de 0.75rem. Isotipo de 72px encima del nombre.
 - **Ficha:** placa oscura con rótulo y números de fila en lima, fila «Hecho con» y botones al pie.
 
 ### Navigation
-- **Menú:** texto simple; la página actual va resaltada con relleno lima.
-- **Índice de láminas:** cinco pestañas `card`; la actual es placa con su número en lima.
-- **Selector de tema:** tres opciones de texto en el pie; la activa lleva un punto lima.
+- **Menú del panel:** rótulos en mayúsculas con una línea delante; marca la sección que se está leyendo. La línea del activo se alarga y pasa a lima.
+- **Volver:** en las subpáginas, botón placa con flecha («Volver al inicio» o «Volver a proyectos»).
+- **Selector de tema:** tres opciones de texto al pie del panel o de la página; la activa lleva un punto lima.
+
+### Fondo de agua
+- Tres manchas difuminadas con el acento (lima, menta y un verde más oscuro) que se mueven, giran y se estiran solas en ciclos de 24, 29 y 34 s; un grano fino evita las bandas.
+- Solo se anima `transform`, para no repintar el desenfoque. Con «reducir movimiento» queda quieto.
 
 ### Figura
 - **Plano:** cuadrícula de 24px sin caja. Se extiende más allá de la figura y se desvanece hacia los cuatro lados; pasa por detrás del texto y de la ficha.
 - **Piezas:** cajas `raise`; la pieza clave va en lima. Conectores y flechas en tinta.
 - **Atajo:** una ruta que salta pasos va por fuera de la cadena, con su nombre en una pieza pequeña sobre la línea (en agent-workflow, «Quick»).
-- **Movimiento:** las piezas entran en orden una sola vez cuando aparece la lámina. Después, solo en los esquemas que representan un proceso (agent-workflow y system-updater), una cuenta recorre cada conector por turno (ciclo de 6 s; tinta en claro, lima en oscuro) y el retorno punteado avanza en su sentido. Los esquemas de estructura (agent-memory, agent-skills, Emotiva) no se mueven.
+- **Movimiento:** las piezas entran en orden una sola vez cuando aparece la página del proyecto. Después, solo en los esquemas que representan un proceso (agent-workflow y system-updater), una cuenta recorre cada conector por turno (ciclo de 6 s; tinta en claro, lima en oscuro) y el retorno punteado avanza en su sentido. Los esquemas de estructura (agent-memory, agent-skills, Emotiva) no se mueven.
 - Solo geometría: flujo en cadena o entradas, núcleo y salidas. En móvil la figura pasa a vertical.
 
 ## Do's and Don'ts
@@ -204,13 +208,14 @@ Cajas rectangulares con esquinas apenas redondeadas (`rounded.md` en cajas, `rou
 ### Do:
 - **Do** separar con cajas de tono o con espacio.
 - **Do** usar la lima solo como relleno con texto negro, o como número sobre la placa.
-- **Do** dejar que los proyectos lleven el peso; el nombre de la persona va en la franja.
-- **Do** respetar `prefers-reduced-motion`: sin deriva de tono, entradas, cuenta ni marcha del retorno.
+- **Do** presentar primero a la persona, en lenguaje simple; los proyectos son la prueba.
+- **Do** respetar `prefers-reduced-motion`: sin deriva de tono, fondo de agua, entradas, cuenta ni marcha del retorno.
 - **Do** resaltar como mucho una o dos frases por página con `mark`.
 
 ### Don't:
 - **Don't** añadir reglas, bordes ni sombras.
 - **Don't** usar la lima como texto o trazo fino sobre el papel claro.
-- **Don't** añadir emoji, insignias de tecnología ni una portada «Hola, soy».
+- **Don't** añadir emoji ni insignias de tecnología.
+- **Don't** hacer que algo siga al cursor: fue la variante descartada por parecer copia de otro sitio.
 - **Don't** sumar animación llamativa: el movimiento es lento y escaso.
 - **Don't** usar una segunda familia tipográfica.
